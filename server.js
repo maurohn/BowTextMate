@@ -7,7 +7,7 @@ const client = new speech.SpeechClient();
 const app = express();
 app.use(bodyParser.json());
 
-app.post('/receive_message', async (req, res) => {
+app.post('/send_message', async (req, res) => {
     const message = req.body;
     if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
         const messages = message.entry[0].changes[0].value.messages;
