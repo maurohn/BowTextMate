@@ -7,6 +7,23 @@ const client = new speech.SpeechClient();
 const app = express();
 app.use(bodyParser.json());
 
+app.get('/webhook', (req, res) => {
+    const VERIFY_TOKEN = 'q1w2e3r4t5y6u7i8o9p0';
+
+    const mode = req.query['hub.mode'];
+    const token = req.query['hub.verify_token'];
+    const challenge = req.query['hub.challenge'];
+
+    if (mode && token) {
+        if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+            console.log('WEBHOOK_VERIFIED');
+            res.status(200).send(challenge);
+        } else {
+            res.sendStatus(403);
+        }
+    }
+});
+
 app.post('/webhook', async (req, res) => {
     const message = req.body;
     if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
