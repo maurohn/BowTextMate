@@ -2,10 +2,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fetch = require('node-fetch');
 const speech = require('@google-cloud/speech');
-const client = new speech.SpeechClient();
+
 
 const app = express();
 app.use(bodyParser.json());
+
+// Configurar el cliente de Google Cloud Speech
+const client = new speech.SpeechClient({
+    keyFilename: 'bowtextmate-3cd3418b875d.json' // Reemplaza con la ruta a tu archivo de clave JSON
+});
 
 app.get('/webhook', (req, res) => {
     const VERIFY_TOKEN = 'q1w2e3r4t5y6u7i8o9p0';
@@ -54,12 +59,13 @@ async function transcribeAudio(audioFile) {
         audio: audio,
         config: config,
     };
-
+    console.log(audio);
     const [response] = await client.recognize(request);
     const transcription = response.results
         .map(result => result.alternatives[0].transcript)
         .join('\n');
     console.log(`Transcription: ${transcription}`);
+    console.log(response.results);
     return transcription;
 }
 
