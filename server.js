@@ -9,7 +9,9 @@ app.use(bodyParser.json());
 
 // Configurar el cliente de Google Cloud Speech
 const client = new speech.SpeechClient({
-    keyFilename: 'bowtextmate-3cd3418b875d.json' // Reemplaza con la ruta a tu archivo de clave JSON
+    keyFilename: '../google_cloud_key.json' // Reemplaza con la ruta a tu archivo de clave JSON
+    //export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-service-account-file.json"
+
 });
 
 app.get('/webhook', (req, res) => {
@@ -29,21 +31,76 @@ app.get('/webhook', (req, res) => {
     }
 });
 
-app.post('/webhook', async (req, res) => {
-    const message = req.body;
-    if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
-        const messages = message.entry[0].changes[0].value.messages;
-        for (let msg of messages) {
-            if (msg.type === 'audio') {
-                const audioUrl = msg.audio.url;
-                const audioResponse = await fetch(audioUrl);
-                const audioBuffer = await audioResponse.buffer();
-                const transcription = await transcribeAudio(audioBuffer);
-                await sendTextMessage(msg.from, transcription);
-            }
-        }
+
+/* app.post('/webhook', (req, res) => {
+    console.log('Webhook received:', req.body);
+
+    // Procesa el mensaje recibido
+    const messagingEvent = req.body.entry[0].changes[0].value.messages[0];
+    if (messagingEvent) {
+        const from = messagingEvent.from; // Número de teléfono del remitente
+        const message = messagingEvent.text.body; // Texto del mensaje
+
+        console.log(`Message from ${from}: ${message}`);
+        // Aquí puedes agregar la lógica para procesar el mensaje
     }
+
+    // Responder con un 200 para confirmar la recepción del mensaje
     res.sendStatus(200);
+}); */
+
+
+app.post('/webhook', async (req, res) => {
+    console.log('Webhook received:', req.body);
+
+    const messagingEvent = req.body.entry[0].changes[0].value.messages[0];
+    if (messagingEvent) {
+        const from = messagingEvent.from; // Número de teléfono del remitente
+
+        if (messagingEvent.type === 'audio') {
+            const audioId = messagingEvent.audio.id; // ID del mensaje de audio
+            const mimeType = messagingEvent.audio.mime_type; // Tipo MIME del audio
+
+            // Aquí puedes usar la API de WhatsApp Business para obtener el archivo de audio
+            const token = 'EAAODQHp5GdsBO8FPO42drNijr3o2bHMnreQhFehT9JqQMJ3YCnNZAhEbPJtZBPpZBAYnjQZB9dwj7AcSUikPZAeR1ZCcdMMdXAsPwtI9p5A2ZA7Ka4srSWY02VSHRivUzuw9EDkkZCj3Un0SPnXWUFZCHEcZAeDAdy9kaVOjrqirFX8Q3x62BUvVQX8pyU9iPqVDSv6Yc6IsB2nlTqiWXy'; // Reemplaza con tu token de acceso
+            const url = `https://graph.facebook.com/v16.0/${audioId}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const audioData = await response.arrayBuffer();
+
+                // Guarda el archivo de audio en el sistema de archivos, base de datos, etc.
+                console.log('Audio data received:', audioData);
+                console.log('Audio data received:', audioData.toString('base64'));
+                
+
+                // Aquí puedes agregar la lógica para procesar el archivo de audio
+                const transcription = await transcribeAudio(audioData);
+                // await sendTextMessage(msg.from, transcription);
+
+            } catch (error) {
+                console.error('Error fetching audio:', error);
+                res.sendStatus(404);
+            }
+        } else if (messagingEvent.type === 'text')  {
+            const message = messagingEvent.text.body; // Texto del mensaje
+            console.log(`Message from ${from}: ${message}`);
+            // Aquí puedes agregar la lógica para procesar el mensaje
+        }
+
+        // Responder con un 200 para confirmar la recepción del mensaje
+        res.sendStatus(200);
+    }
 });
 
 async function transcribeAudio(audioFile) {
@@ -51,8 +108,8 @@ async function transcribeAudio(audioFile) {
         content: audioFile.toString('base64'),
     };
     const config = {
-        encoding: 'AMR_WB',
-        sampleRateHertz: 16000,
+        encoding: 'OGG_OPUS',
+        sampleRateHertz: 8000,
         languageCode: 'es-ES',
     };
     const request = {
