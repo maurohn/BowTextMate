@@ -40,51 +40,54 @@ app.get('/webhook', (req, res) => {
 
 app.post('/webhook', async (req, res) => {
     console.log('Webhook received:', req.body);
+    const message = req.body;
+    if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
+        const messages = message.entry[0].changes[0].value.messages;
+        for (let msg of messages) {
 
-    const messagingEvent = req.body.entry[0].changes[0].value.messages[0];
-    if (messagingEvent) {
-        const from = messagingEvent.from; // Número de teléfono del remitente
+                const from = msg.from; // Número de teléfono del remitente
 
-        if (messagingEvent.type === 'audio') {
-            const audioId = messagingEvent.audio.id; // ID del mensaje de audio
-            const mimeType = messagingEvent.audio.mime_type; // Tipo MIME del audio
-            const url = url_whatsapp + audioId;
-            try {
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token_whatsapp}`
+                if (msg.type === 'audio') {
+                    const audioId = msg.audio.id; // ID del mensaje de audio
+                    const mimeType = msg.audio.mime_type; // Tipo MIME del audio
+                    const url = url_whatsapp + audioId;
+                    try {
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token_whatsapp}`
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+
+                        //TODO VER POR ACA SI NO HAY OTRO METODO QUE PASE EL AUDIO
+                        const audioData = await response.arrayBuffer();
+
+                        // Guarda el archivo de audio en el sistema de archivos, base de datos, etc.
+                        // console.log('Audio data received:', audioData);
+                        // console.log('Audio data received:', audioData.toString('base64'));
+                        
+
+                        // Aquí puedes agregar la lógica para procesar el archivo de audio
+                        const transcription = await transcribeAudio(audioData);
+                        // await sendTextMessage(msg.from, transcription);
+
+                    } catch (error) {
+                        console.error('Error fetching audio:', error);
+                        res.sendStatus(404);
                     }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                } else if (msg.type === 'text')  {
+                    const message = msg.text.body; // Texto del mensaje
+                    console.log(`Message from ${from}: ${message}`);
+                    // Aquí puedes agregar la lógica para procesar el mensaje
                 }
 
-                //TODO VER POR ACA SI NO HAY OTRO METODO QUE PASE EL AUDIO
-                const audioData = await response.arrayBuffer();
-
-                // Guarda el archivo de audio en el sistema de archivos, base de datos, etc.
-                // console.log('Audio data received:', audioData);
-                // console.log('Audio data received:', audioData.toString('base64'));
-                
-
-                // Aquí puedes agregar la lógica para procesar el archivo de audio
-                const transcription = await transcribeAudio(audioData);
-                // await sendTextMessage(msg.from, transcription);
-
-            } catch (error) {
-                console.error('Error fetching audio:', error);
-                res.sendStatus(404);
+                // Responder con un 200 para confirmar la recepción del mensaje
+                res.sendStatus(200);
             }
-        } else if (messagingEvent.type === 'text')  {
-            const message = messagingEvent.text.body; // Texto del mensaje
-            console.log(`Message from ${from}: ${message}`);
-            // Aquí puedes agregar la lógica para procesar el mensaje
-        }
-
-        // Responder con un 200 para confirmar la recepción del mensaje
-        res.sendStatus(200);
     }
 });
 
