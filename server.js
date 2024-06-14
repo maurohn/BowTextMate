@@ -46,7 +46,7 @@ app.post('/webhook', async (req, res) => {
             // Aquí puedes usar la API de WhatsApp Business para obtener el archivo de audio
             //export WHATSAPP_APPLICATION_CREDENTIALS="EAAODQHp5GdsBO0zlD0QZCRZCR6ZCD7jaeUp7T5Wlps3zkkXEX10s5ctX4cWVZBHMMGWsVkZCjtxDEoSIBecWHuiIytmPjUIZBmHruxQ1TTKMsWQLZBnVirvlZBFXAGB6DTTztquAZBrrsAQifz9maUENKir3DHwb1JQn7zU8ZBb02xmSgaKk6cOVvYfVGfEaHE3oI7G9QcnbLZCSpMbtZBqT"
             const token = 'EAAODQHp5GdsBO0zlD0QZCRZCR6ZCD7jaeUp7T5Wlps3zkkXEX10s5ctX4cWVZBHMMGWsVkZCjtxDEoSIBecWHuiIytmPjUIZBmHruxQ1TTKMsWQLZBnVirvlZBFXAGB6DTTztquAZBrrsAQifz9maUENKir3DHwb1JQn7zU8ZBb02xmSgaKk6cOVvYfVGfEaHE3oI7G9QcnbLZCSpMbtZBqT'; // Reemplaza con tu token de acceso
-            const url = `https://graph.facebook.com/v16.0/${audioId}`;
+            const url = `https://graph.facebook.com/v19.0/${audioId}`;
 
             try {
                 const response = await fetch(url, {
@@ -64,8 +64,8 @@ app.post('/webhook', async (req, res) => {
                 const audioData = await response.arrayBuffer();
 
                 // Guarda el archivo de audio en el sistema de archivos, base de datos, etc.
-                console.log('Audio data received:', audioData);
-                console.log('Audio data received:', audioData.toString('base64'));
+                // console.log('Audio data received:', audioData);
+                // console.log('Audio data received:', audioData.toString('base64'));
                 
 
                 // Aquí puedes agregar la lógica para procesar el archivo de audio
@@ -89,11 +89,12 @@ app.post('/webhook', async (req, res) => {
 
 async function transcribeAudio(audioFile) {
     const base64Audio = Buffer.from(audioFile).toString('base64');
+    console.log('AudioenBase64:', base64Audio);
     const audio = {
         content: base64Audio,
     };
     const config = {
-        encoding: 'OGG_OPUS',
+        encoding: 'FLAC',
         sampleRateHertz: 16000,
         languageCode: 'es-ES',
     };
