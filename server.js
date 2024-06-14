@@ -32,24 +32,6 @@ app.get('/webhook', (req, res) => {
 });
 
 
-/* app.post('/webhook', (req, res) => {
-    console.log('Webhook received:', req.body);
-
-    // Procesa el mensaje recibido
-    const messagingEvent = req.body.entry[0].changes[0].value.messages[0];
-    if (messagingEvent) {
-        const from = messagingEvent.from; // Número de teléfono del remitente
-        const message = messagingEvent.text.body; // Texto del mensaje
-
-        console.log(`Message from ${from}: ${message}`);
-        // Aquí puedes agregar la lógica para procesar el mensaje
-    }
-
-    // Responder con un 200 para confirmar la recepción del mensaje
-    res.sendStatus(200);
-}); */
-
-
 app.post('/webhook', async (req, res) => {
     console.log('Webhook received:', req.body);
 
@@ -77,6 +59,7 @@ app.post('/webhook', async (req, res) => {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
+                //TODO VER POR ACA SI NO HAY OTRO METODO QUE PASE EL AUDIO
                 const audioData = await response.arrayBuffer();
 
                 // Guarda el archivo de audio en el sistema de archivos, base de datos, etc.
@@ -104,12 +87,13 @@ app.post('/webhook', async (req, res) => {
 });
 
 async function transcribeAudio(audioFile) {
+    const base64Audio = Buffer.from(audioFile).toString('base64');
     const audio = {
-        content: audioFile.toString('base64'),
+        content: base64Audio,
     };
     const config = {
         encoding: 'OGG_OPUS',
-        sampleRateHertz: 8000,
+        sampleRateHertz: 16000,
         languageCode: 'es-ES',
     };
     const request = {
