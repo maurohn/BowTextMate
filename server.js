@@ -44,7 +44,8 @@ app.post('/webhook', async (req, res) => {
             const mimeType = messagingEvent.audio.mime_type; // Tipo MIME del audio
 
             // Aquí puedes usar la API de WhatsApp Business para obtener el archivo de audio
-            const token = 'EAAODQHp5GdsBO8FPO42drNijr3o2bHMnreQhFehT9JqQMJ3YCnNZAhEbPJtZBPpZBAYnjQZB9dwj7AcSUikPZAeR1ZCcdMMdXAsPwtI9p5A2ZA7Ka4srSWY02VSHRivUzuw9EDkkZCj3Un0SPnXWUFZCHEcZAeDAdy9kaVOjrqirFX8Q3x62BUvVQX8pyU9iPqVDSv6Yc6IsB2nlTqiWXy'; // Reemplaza con tu token de acceso
+            //export WHATSAPP_APPLICATION_CREDENTIALS="EAAODQHp5GdsBO0zlD0QZCRZCR6ZCD7jaeUp7T5Wlps3zkkXEX10s5ctX4cWVZBHMMGWsVkZCjtxDEoSIBecWHuiIytmPjUIZBmHruxQ1TTKMsWQLZBnVirvlZBFXAGB6DTTztquAZBrrsAQifz9maUENKir3DHwb1JQn7zU8ZBb02xmSgaKk6cOVvYfVGfEaHE3oI7G9QcnbLZCSpMbtZBqT"
+            const token = 'EAAODQHp5GdsBO0zlD0QZCRZCR6ZCD7jaeUp7T5Wlps3zkkXEX10s5ctX4cWVZBHMMGWsVkZCjtxDEoSIBecWHuiIytmPjUIZBmHruxQ1TTKMsWQLZBnVirvlZBFXAGB6DTTztquAZBrrsAQifz9maUENKir3DHwb1JQn7zU8ZBb02xmSgaKk6cOVvYfVGfEaHE3oI7G9QcnbLZCSpMbtZBqT'; // Reemplaza con tu token de acceso
             const url = `https://graph.facebook.com/v16.0/${audioId}`;
 
             try {
