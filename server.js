@@ -7,11 +7,17 @@ const speech = require('@google-cloud/speech');
 const app = express();
 app.use(bodyParser.json());
 
+//export WHATSAPP_APPLICATION_CREDENTIALS="EAAODQHp5GdsBO0zlD0QZCRZCR6ZCD7jaeUp7T5Wlps3zkkXEX10s5ctX4cWVZBHMMGWsVkZCjtxDEoSIBecWHuiIytmPjUIZBmHruxQ1TTKMsWQLZBnVirvlZBFXAGB6DTTztquAZBrrsAQifz9maUENKir3DHwb1JQn7zU8ZBb02xmSgaKk6cOVvYfVGfEaHE3oI7G9QcnbLZCSpMbtZBqT"
+//export GOOGLE_APPLICATION_CREDENTIALS="/Users/mauro/Documents/google_cloud_key.json"
+
+//Global variables
+const token_whatsapp = process.env.WHATSAPP_APPLICATION_CREDENTIALS;
+const google_cloud_key = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+const url_whatsapp = "https://graph.facebook.com/v19.0/";
+
 // Configurar el cliente de Google Cloud Speech
 const client = new speech.SpeechClient({
-    keyFilename: '../google_cloud_key.json' // Reemplaza con la ruta a tu archivo de clave JSON
-    //export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-service-account-file.json"
-
+    keyFilename: google_cloud_key
 });
 
 app.get('/webhook', (req, res) => {
@@ -42,17 +48,12 @@ app.post('/webhook', async (req, res) => {
         if (messagingEvent.type === 'audio') {
             const audioId = messagingEvent.audio.id; // ID del mensaje de audio
             const mimeType = messagingEvent.audio.mime_type; // Tipo MIME del audio
-
-            // Aquí puedes usar la API de WhatsApp Business para obtener el archivo de audio
-            //export WHATSAPP_APPLICATION_CREDENTIALS="EAAODQHp5GdsBO0zlD0QZCRZCR6ZCD7jaeUp7T5Wlps3zkkXEX10s5ctX4cWVZBHMMGWsVkZCjtxDEoSIBecWHuiIytmPjUIZBmHruxQ1TTKMsWQLZBnVirvlZBFXAGB6DTTztquAZBrrsAQifz9maUENKir3DHwb1JQn7zU8ZBb02xmSgaKk6cOVvYfVGfEaHE3oI7G9QcnbLZCSpMbtZBqT"
-            const token = 'EAAODQHp5GdsBO0zlD0QZCRZCR6ZCD7jaeUp7T5Wlps3zkkXEX10s5ctX4cWVZBHMMGWsVkZCjtxDEoSIBecWHuiIytmPjUIZBmHruxQ1TTKMsWQLZBnVirvlZBFXAGB6DTTztquAZBrrsAQifz9maUENKir3DHwb1JQn7zU8ZBb02xmSgaKk6cOVvYfVGfEaHE3oI7G9QcnbLZCSpMbtZBqT'; // Reemplaza con tu token de acceso
-            const url = `https://graph.facebook.com/v19.0/${audioId}`;
-
+            const url = url_whatsapp + audioId;
             try {
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token_whatsapp}`
                     }
                 });
 
@@ -113,7 +114,7 @@ async function transcribeAudio(audioFile) {
 }
 
 async function sendTextMessage(to, text) {
-  const url = `https://graph.facebook.com/v19.0/334466229750599/messages`;
+  const url = url_whatsapp + 'messages';
     const data = {
         messaging_product: "whatsapp",
         to: to,
@@ -126,7 +127,7 @@ async function sendTextMessage(to, text) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer EAAODQHp5GdsBOZChXI30CXvKILTAEPK3fmPZCVjDRmwGsXHK9zZAiK21bmGWFZCGf5ekkdf8EjDZBSIsIQ1ZCQbrtBmCdkXQluQCELaLadNiDV09u5wWLVXtFYrufAAcZCSQJf6v8Kb3IA21OFOPmQ2RQ11QIhvNj3WZAOkWuO6ZAegs5sWQ5SpqSxE8XoHapSbeUK23x0ORSZA5LmMKtk`,
+             'Authorization': `Bearer ${nodem}`
           },
         body: JSON.stringify(data),
     });
