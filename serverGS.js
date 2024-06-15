@@ -49,55 +49,13 @@ app.post('/webhook', async (req, res) => {
         for (let msg of messages) {
 
                 const from = msg.from; // Número de teléfono del remitente
-
+              
                 if (msg.type === 'audio') {
                     const audioId = msg.audio.id; // ID del mensaje de audio
                     const mimeType = msg.audio.mime_type; // Tipo MIME del audio
                     const url = url_whatsapp + audioId;
-                    try {
-             
-                         
-                        // Paso 2: Descargar el archivo de audio utilizando la URL obtenida
-                        const audioResponse = await axios.get(url, {
-                            headers: {
-                                'Authorization': `Bearer ${token_whatsapp}`,
-                                "User-Agent":
-                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
-                            // "NONISV|MyBot|MyBot/12.0",
-                            },
-                            responseType: 'stream'
-                        });
-
-                            
-                            // Set appropriate headers for streaming audio
-                            let fileName = Date.now().toString() + "_audio.ogg";
-                            audioResponse.setHeader('Content-Type', 'audio/ogg');
-                            audioResponse.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-                            audioResponse.setHeader('Transfer-Encoding', 'chunked');
-                        
-                      
-                        //TODO VER POR ACA SI NO HAY OTRO METODO QUE PASE EL AUDIO
-                        //const audioData = await response.arrayBuffer();
-                        const audioBuffer = audioResponse.data.pipe(audioResponse);
-                        
-                        // Guarda el archivo de audio en el sistema de archivos, base de datos, etc.
-                        console.log('Audio data received:', audioBuffer);
-                        //console.log(response);
-                        // console.log('Audio data received:', audioData.toString('base64'));
-                           // Paso 3: Escribir el buffer de audio en un archivo en el sistema de archivos local
-                        fs.writeFileSync(audioFilePath, audioBuffer);
-
-                        console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
-
-                        // Aquí puedes agregar la lógica para procesar el archivo de audio
-                        const transcription = await transcribeAudio(audioFilePath);
-                        console.log(transcription);
-                        // await sendTextMessage(msg.from, transcription);
-
-                    } catch (error) {
-                        console.error('Error fetching audio:', error);
-                        res.sendStatus(404);
-                    }
+                    this.downLoadMedia(url, res);
+ 
                 } else if (msg.type === 'text')  {
                     const message = msg.text.body; // Texto del mensaje
                     console.log(`Message from ${from}: ${message}`);
@@ -110,7 +68,29 @@ app.post('/webhook', async (req, res) => {
     }
 });
 
+exports.downLoadMedia = async (url, res) => {  
 
+      try {
+        // Fetch the audio data from the external URL with the auth token
+        const audioResponse = await axios.get(url, {
+          responseType: 'stream',
+          headers: {
+            Authorization: `Bearer ${token_whatsapp}`,
+          }
+        });
+    
+        // Set appropriate headers for streaming audio
+        let fileName = Date.now().toString() + "_audio.ogg";
+        res.setHeader('Content-Type', 'audio/ogg');
+        res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+        res.setHeader('Transfer-Encoding', 'chunked');
+    
+        // Pipe the audio stream from the external response to the current response
+        audioResponse.data.pipe(res);
+      } catch (error) {
+        res.status(500).send('Error fetching audio data: ' + error.message);
+      }
+    };
 
 async function transcribeAudio(audioFile) {
     const audioBytes = fs.readFileSync(audioFile).toString('base64');
