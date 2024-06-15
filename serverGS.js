@@ -65,20 +65,27 @@ app.post('/webhook', async (req, res) => {
                                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
                             // "NONISV|MyBot|MyBot/12.0",
                             },
-                            responseType: 'arraybuffer'
+                            responseType: 'stream'
                         });
 
+                            
+                            // Set appropriate headers for streaming audio
+                            let fileName = Date.now().toString() + "_audio.ogg";
+                            audioResponse.setHeader('Content-Type', 'audio/ogg');
+                            audioResponse.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+                            audioResponse.setHeader('Transfer-Encoding', 'chunked');
+                        
                       
                         //TODO VER POR ACA SI NO HAY OTRO METODO QUE PASE EL AUDIO
                         //const audioData = await response.arrayBuffer();
-                        const audioBuffer = audioResponse.data;
-
+                        const audioBuffer = audioResponse.data.pipe(audioResponse);
+                        
                         // Guarda el archivo de audio en el sistema de archivos, base de datos, etc.
                         console.log('Audio data received:', audioBuffer);
                         //console.log(response);
                         // console.log('Audio data received:', audioData.toString('base64'));
                            // Paso 3: Escribir el buffer de audio en un archivo en el sistema de archivos local
-                        fs.writeFileSync(audioFilePath, Buffer.from(audioBuffer));
+                        fs.writeFileSync(audioFilePath, audioBuffer);
 
                         console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
 
@@ -102,6 +109,8 @@ app.post('/webhook', async (req, res) => {
             }
     }
 });
+
+
 
 async function transcribeAudio(audioFile) {
     const audioBytes = fs.readFileSync(audioFile).toString('base64');
