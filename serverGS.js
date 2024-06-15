@@ -53,8 +53,7 @@ app.post('/webhook', async (req, res) => {
                 if (msg.type === 'audio') {
                     const audioId = msg.audio.id; // ID del mensaje de audio
                     const mimeType = msg.audio.mime_type; // Tipo MIME del audio
-                    //const url = url_whatsapp + audioId;
-                    const url = 'https://lookaside.fbsbx.com/whatsapp_business/attachments/?mid=827962015880686&ext=1718489396&hash=ATuUuxquYXamIMHVAf6t3XXvaYPUcK34R604l5x64f2tgA';
+                    const url = url_whatsapp + audioId;
                     try {
              
                          
