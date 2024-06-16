@@ -57,18 +57,24 @@ app.post('/webhook', async (req, res) => {
                     try {
              
                          
-                        // Paso 2: Descargar el archivo de audio utilizando la URL obtenida
-                        const audioResponse = await axios.get(url, {
+                        // Paso 2: Descargar el archivo que contiene la url de audio utilizando la URL obtenida
+                        const urlResponse = await axios.get(url, {
                             headers: {
                                 'Authorization': `Bearer ${token_whatsapp}`,
                                 "User-Agent":
                                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
                             // "NONISV|MyBot|MyBot/12.0",
-                            },
-                            responseType: 'arraybuffer'
+                            }
                         });
-
-                      
+ 
+                        const audioResponse = await axios.get(urlResponse.data.url, {
+                            headers: {
+                                'Authorization': `Bearer ${token_whatsapp}`,
+                                "User-Agent":
+                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+                            // "NONISV|MyBot|MyBot/12.0",
+                            }
+                        });
                         //TODO VER POR ACA SI NO HAY OTRO METODO QUE PASE EL AUDIO
                         //const audioData = await response.arrayBuffer();
                         const audioBuffer = audioResponse.data;
