@@ -70,7 +70,7 @@ app.post('/webhook', async (req, res) => {
                           })
                           .catch(function (error) {
                             // manejar error
-                            console.log('ERROR:',error);
+                            console.log('ERROR:');
                           });
                    
 
