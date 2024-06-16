@@ -65,32 +65,36 @@ app.post('/webhook', async (req, res) => {
                                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
                             // "NONISV|MyBot|MyBot/12.0",
                             }
-                        });
- 
-                        const audioResponse = await axios.get(urlResponse.data.url, {
-                            headers: {
-                                'Authorization': `Bearer ${token_whatsapp}`,
-                                "User-Agent":
-                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
-                            // "NONISV|MyBot|MyBot/12.0",
-                            }
-                        });
-                        //TODO VER POR ACA SI NO HAY OTRO METODO QUE PASE EL AUDIO
-                        //const audioData = await response.arrayBuffer();
-                        const audioBuffer = audioResponse.data;
+                        }).then(function (response) {
+                            // manejar respuesta exitosa
+                            console.log(response);
+                            urlResponse = response.data.url;
+                            axios({
+                                method: 'get',
+                                url: urlResponse,
+                                responseType: 'stream'
+                              })
+                                .then(function (response) {
+                                  response.data.pipe(fs.createWriteStream(audioFilePath, Buffer.from(audioResponse.data)))
+                                });
+                              
+                          })
+                          .catch(function (error) {
+                            // manejar error
+                            console.log(error);
+                          })
+                          .finally(function () {
+                            // siempre sera executado
+                          });
+                        
 
-                        // Guarda el archivo de audio en el sistema de archivos, base de datos, etc.
-                        console.log('Audio data received:', audioBuffer);
-                        //console.log(response);
-                        // console.log('Audio data received:', audioData.toString('base64'));
-                           // Paso 3: Escribir el buffer de audio en un archivo en el sistema de archivos local
-                        fs.writeFileSync(audioFilePath, Buffer.from(audioBuffer));
-
+                       
+                   
                         console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
 
                         // Aquí puedes agregar la lógica para procesar el archivo de audio
-                        const transcription = await transcribeAudio(audioFilePath);
-                        console.log(transcription);
+                        //const transcription = await transcribeAudio(audioFilePath);
+                        //console.log(transcription);
                         // await sendTextMessage(msg.from, transcription);
 
                     } catch (error) {
