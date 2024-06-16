@@ -42,7 +42,7 @@ app.get('/webhook', (req, res) => {
 
 
 app.post('/webhook', async (req, res) => {
-    console.log('Webhook received:', req.body);
+    //console.log('Webhook received:', req.body);
     const message = req.body;
     if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
         const messages = message.entry[0].changes[0].value.messages;
