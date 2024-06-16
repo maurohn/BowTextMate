@@ -75,7 +75,9 @@ app.post('/webhook', async (req, res) => {
                                 responseType: 'stream'
                               })
                                 .then(function (response) {
-                                  response.data.pipe(fs.createWriteStream(audioFilePath, Buffer.from(audioResponse.data)))
+                                  response.data.pipe(fs.createWriteStream(audioFilePath, Buffer.from(audioResponse.data)));
+                                  console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
+
                                 });
                               
                           })
@@ -83,12 +85,6 @@ app.post('/webhook', async (req, res) => {
                             // manejar error
                             console.log(error);
                           })
-                          .finally(function () {
-                            // siempre sera executado
-                          });
-                        
-
-                       
                    
                         console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
 
