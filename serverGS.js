@@ -65,25 +65,20 @@ app.post('/webhook', async (req, res) => {
                                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
                             // "NONISV|MyBot|MyBot/12.0",
                             }
-                        }).then(function (response) {
-                            return response;
-                          })
-                          .catch(function (error) {
-                            // manejar error
-                            console.log('ERROR:');
-                          });
-                   
+                        });
 
-                          const audioResponse = axios({
-                            method: 'get',
-                            url: url_whatsapp.data.url,
-                            responseType: 'stream'
-                          })
-                            .then(function (response) {
-                              response.data.pipe(fs.createWriteStream(audioFilePath, Buffer.from(audioResponse.data)));
-                              console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
 
-                          });  
+                        console.log('URL:',url_whatsapp);
+                        //   const audioResponse = axios({
+                        //     method: 'get',
+                        //     url: url_whatsapp.data.url,
+                        //     responseType: 'stream'
+                        //   })
+                        //     .then(function (response) {
+                        //       response.data.pipe(fs.createWriteStream(audioFilePath, Buffer.from(audioResponse.data)));
+                        //       console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
+
+                        //   });  
                         //console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
 
                         // Aquí puedes agregar la lógica para procesar el archivo de audio
