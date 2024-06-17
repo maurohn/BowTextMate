@@ -71,12 +71,12 @@ app.post('/webhook', async (req, res) => {
                                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
                             // "NONISV|MyBot|MyBot/12.0",
                             },
-                             responseType: 'arrayBuffer',
+                             responseType: 'arraybuffer',
                         });
                                
                         console.log('RESPONSE:', audioResponse);
                         
-                        const audioBuffer = await audioResponse.buffer();
+                        const audioBuffer = Buffer.from(audioResponse.data);
                         const transcription = await transcribeAudio(audioBuffer);
                         console.log(transcription);
                         // await sendTextMessage(msg.from, transcription);
