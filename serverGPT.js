@@ -160,6 +160,10 @@ async function transcribeAudio(audioFilePath) {
       const openai = new OpenAI();
       const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: user_text }],
+      messages=[
+        {role: "system", content: "Contestamoe como si fueras jarvis de ironman"},
+        {role: "user", content: user_text}
+      ]
       model: "gpt-3.5-turbo-0125",
     });
     return completion.choices[0];
