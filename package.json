@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "Voice to Text",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +23,9 @@
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@google-cloud/speech": "^6.6.0",
+    "@xenova/transformers": "^2.17.2",
+    "audio-decode": "^2.2.0",
+    "audiobuffer-to-wav": "^1.0.0",
     "axios": "^1.7.2",
     "body-parser": "^1.20.2",
     "either": "^0.0.1",
@@ -30,9 +35,12 @@
     "fp-ts": "^2.16.6",
     "fs": "^0.0.1-security",
     "multer": "^1.4.5-lts.1",
+    "ogg-opus-decoder": "^1.6.12",
     "openai": "^4.51.0",
+    "opus-decoder": "^0.7.6",
     "path": "^0.12.7",
-    "stream": "^0.0.2"
+    "stream": "^0.0.2",
+    "wavefile": "^11.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.3"
