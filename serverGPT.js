@@ -4,12 +4,22 @@ const OpenAI = require('openai');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
-
-
-
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 app.use(bodyParser.json());
+
+
+// Initialization
+app.use(cookieParser());
+
+app.use(session({
+    secret: "amar",
+    saveUninitialized: true,
+    resave: true
+}));
+
 
 //exportc WHATSAPP_APPLICATION_CREDENTIALS="fdsgf"
 //export GOOGLE_APPLICATION_CREDENTIALS="google_cloud_key.json"
@@ -20,6 +30,12 @@ const token_whatsapp = process.env.WHATSAPP_APPLICATION_CREDENTIALS;
 const url_whatsapp = "https://graph.facebook.com/v19.0/";
 // Ruta donde se guardará el nuevo archivo de audio
 //const audioFilePath = path.join(__dirname, 'audio_from_whatsapp.ogg');
+
+const conversation = {
+  messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"}],
+  model: "gpt-3.5-turbo",
+};
+
 
 app.get('/webhook', (req, res) => {
     const VERIFY_TOKEN = 'q1w2e3r4t5y6u7i8o9p0';
@@ -40,6 +56,11 @@ app.get('/webhook', (req, res) => {
 
 
 app.post('/webhook', async (req, res) => {
+      //Si la session no existe la guardo
+      if (!req.session.conversation) {
+        req.session.conversation = conversation;
+        req.session.save();
+      }
       const message = req.body;
       if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
           const messages = message.entry[0].changes[0].value.messages;
@@ -156,16 +177,22 @@ async function transcribeAudio(audioFilePath) {
   }
   
   
-  async function chatGPTProcessing(user_text) {
+  async function chatGPTProcessing(req, user_text) {
       const openai = new OpenAI();
-      const conversation ={
-        messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"},
-                   {role: "user", content: user_text }],
-        model: "gpt-3.5-turbo",
-    };
+    //   const conversation ={
+    //     messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"},
+    //                {role: "user", content: user_text }],
+    //     model: "gpt-3.5-turbo",
+    // };
+    const conversation = req.session.conversation;
+    console.log(conversation);
+    conversation.messages.push({role: "user", content: user_text });
     const completion = await openai.chat.completions.create(conversation);
     conversation.messages.push({role: "assistant", content: completion.choices[0].message.content });
     console.log(conversation);
+    //save conversation to session
+    req.session.conversation = conversation;
+    req.session.save();
     return completion.choices[0];
     //console.log(completion.choices[0]);
   }
