@@ -84,11 +84,12 @@ app.post('/webhook', async (req, res) => {
                     }
                 } else if (msg.type === 'text')  {
                     const message = msg.text.body; // Texto del mensaje
-                    await sendTextMessage(msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
+                    const gptResponse = await chatGPTProcessing(message);
+                    await sendTextMessage(msg.from, gptResponse.message.content);
                     console.log(`Message from ${from}: ${message}`);
                     
                     // Aquí puedes agregar la lógica para procesar el mensaje
-                    await chatGPTProcessing(message);
+                   
                 } else {
                     const message = msg.text.body; // Texto del mensaje
                     await sendTextMessage(msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
@@ -184,8 +185,8 @@ async function chatGPTProcessing(user_text) {
     messages: [{ role: "user", content: user_text }],
     model: "gpt-4o",
   });
-
-  console.log(completion.choices[0]);
+  return completion.choices[0];
+  //console.log(completion.choices[0]);
 }
 
 
