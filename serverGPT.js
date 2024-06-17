@@ -4,16 +4,16 @@ const OpenAI = require('openai');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
-const fetch = require('node-fetch');
+
 
 
 
 const app = express();
 app.use(bodyParser.json());
 
-//exportc WHATSAPP_APPLICATION_CREDENTIALS="EAAODQHp5GdsBO0zlD0QZCRZCR6ZCD7jaeUp7T5Wlps3zkkXEX10s5ctX4cWVZBHMMGWsVkZCjtxDEoSIBecWHuiIytmPjUIZBmHruxQ1TTKMsWQLZBnVirvlZBFXAGB6DTTztquAZBrrsAQifz9maUENKir3DHwb1JQn7zU8ZBb02xmSgaKk6cOVvYfVGfEaHE3oI7G9QcnbLZCSpMbtZBqT"
-//export GOOGLE_APPLICATION_CREDENTIALS="/Users/mauro/Documents/google_cloud_key.json"
-//export OPENAI_API_KEY="sk-apy-key-61zgL22jgKS9rcjjYMaST3BlbkFJ4Q93rgY8D5xwMPKaSjq2"
+//exportc WHATSAPP_APPLICATION_CREDENTIALS="fdsgf"
+//export GOOGLE_APPLICATION_CREDENTIALS="google_cloud_key.json"
+//export OPENAI_API_KEY=""
 
 //Global variables
 const token_whatsapp = process.env.WHATSAPP_APPLICATION_CREDENTIALS;
@@ -40,7 +40,6 @@ app.get('/webhook', (req, res) => {
 
 
 app.post('/webhook', async (req, res) => {
-      //console.log('Webhook received:', req.body);
       const message = req.body;
       if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
           const messages = message.entry[0].changes[0].value.messages;
@@ -61,7 +60,7 @@ app.post('/webhook', async (req, res) => {
                               }
                           });
                           //Llamo al primer metodo para obtener el ID del Audio.
-                          console.log('URL:',url_whatsapp_audio.data.url);
+                          //console.log('URL:',url_whatsapp_audio.data.url);
                           const audioResponse = await axios.get(url_whatsapp_audio.data.url, {
                               headers: {
                                   'Authorization': `Bearer ${token_whatsapp}`,
@@ -75,14 +74,10 @@ app.post('/webhook', async (req, res) => {
                
                           // Paso 3: Escribir el buffer de audio en un archivo en el sistema de archivos local
                           fs.writeFileSync(audioFilePath, Buffer.from(audioBuffer));
-
-                          console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
-
-                       // Aquí puedes agregar la lógica para procesar el archivo de audio
-                       const transcription = await transcribeAudio(audioFilePath);
-                       console.log(transcription);
-                       //await sendTextMessage(msg.from, transcription);
-
+                          // Aquí puedes agregar la lógica para procesar el archivo de audio
+                          const transcription = await transcribeAudio(audioFilePath);
+                          //console.log(transcription);
+                          await sendTextMessage(msg.from, transcription);
 
                     } catch (error) {
                         console.error('Error fetching audio:', error);
@@ -90,12 +85,14 @@ app.post('/webhook', async (req, res) => {
                     }
                 } else if (msg.type === 'text')  {
                     const message = msg.text.body; // Texto del mensaje
-                    const gptResponse = await chatGPTProcessing(message);
-                    await sendTextMessage(msg.from, gptResponse.message.content);
-                   // console.log(`Message from ${from}: ${message}`);
+                    if(msg.text.body == 'resumir') {
+                      const transcription = await transcribeAudio(audioFilePath);
+                      console.log(transcription);
+                    } else {
+                      const gptResponse = await chatGPTProcessing(message);
+                      await sendTextMessage(msg.from, gptResponse.message.content);
+                    }
                     
-                    // Aquí puedes agregar la lógica para procesar el mensaje
-                   
                 } else {
                     const message = msg.text.body; // Texto del mensaje
                     await sendTextMessage(msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
