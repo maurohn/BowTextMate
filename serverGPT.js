@@ -158,11 +158,14 @@ async function transcribeAudio(audioFilePath) {
   
   async function chatGPTProcessing(user_text) {
       const openai = new OpenAI();
-      const completion = await openai.chat.completions.create({
+      const conversation ={
         messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"},
                    {role: "user", content: user_text }],
         model: "gpt-3.5-turbo",
-    });
+    };
+    const completion = await openai.chat.completions.create(conversation);
+    conversation.messages.push({role: "assistant", content: completion.choices[0] });
+    console.log(conversation);
     return completion.choices[0];
     //console.log(completion.choices[0]);
   }
