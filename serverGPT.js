@@ -89,9 +89,13 @@ app.post('/webhook', async (req, res) => {
                     if(msg.text.body === 'Resumir' || msg.text.body === 'resumir' ) {
                       const transcription = await transcribeAudio(audioFilePath);
                       console.log(transcription);
-                    } 
-                    const gptResponse = await chatGPTProcessing(message);
-                    await sendTextMessage(msg.from, gptResponse.message.content);
+                      const gptResponse = await chatGPTProcessing(message + '; ' + transcription);
+                      await sendTextMessage(msg.from, gptResponse.message.content);
+                    } else {
+                      const gptResponse = await chatGPTProcessing(message);
+                      await sendTextMessage(msg.from, gptResponse.message.content);
+                    }
+                   
                     
                 } else {
                     const message = msg.text.body; // Texto del mensaje
