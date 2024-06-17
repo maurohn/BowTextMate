@@ -102,9 +102,9 @@ async function transcribeAudio(audioFile) {
         content: audioFile.toString('base64'),
     };
     const config = {
-        encoding: 'AMR_WB',
+        encoding: 'OGG_OPUS',
+        languageCode: 'es-AR',
         sampleRateHertz: 16000,
-        languageCode: 'es-ES',
     };
     const request = {
         audio: audio,
