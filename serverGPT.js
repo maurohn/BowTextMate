@@ -45,7 +45,9 @@ app.post('/webhook', async (req, res) => {
           const messages = message.entry[0].changes[0].value.messages;
           for (let msg of messages) {
                   const from = msg.from; // Número de teléfono del remitente
-                  console.log(msg);
+                  const nameFile = from+'.ogg';
+                  audioFilePath = path.join(__dirname, nameFile);
+                  //console.log(msg);
                   if (msg.type === 'audio') {
                       const audioId = msg.audio.id; // ID del mensaje de audio
                       const mimeType = msg.audio.mime_type; // Tipo MIME del audio
@@ -85,10 +87,10 @@ app.post('/webhook', async (req, res) => {
                     }
                 } else if (msg.type === 'text')  {
                     const message = msg.text.body; // Texto del mensaje
-                    console.log(message);
+                    //console.log(message);
                     if(msg.text.body === 'Resumir' || msg.text.body === 'resumir' ) {
                       const transcription = await transcribeAudio(audioFilePath);
-                      console.log(transcription);
+                      //console.log(transcription);
                       const gptResponse = await chatGPTProcessing(message + '; ' + transcription);
                       await sendTextMessage(msg.from, gptResponse.message.content);
                     } else {
