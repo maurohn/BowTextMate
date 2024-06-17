@@ -69,17 +69,16 @@ app.post('/webhook', async (req, res) => {
 
 
                         console.log('URL:',url_whatsapp.data.url);
-                        //   const audioResponse = axios({
-                        //     method: 'get',
-                        //     url: url_whatsapp.data.url,
-                        //     responseType: 'stream'
-                        //   })
-                        //     .then(function (response) {
-                        //       response.data.pipe(fs.createWriteStream(audioFilePath, Buffer.from(audioResponse.data)));
-                        //       console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
+                        const audioResponse = await axios({
+                                method: 'get',
+                                url: url_whatsapp.data.url,
+                                responseType: 'stream'
+                                }).then(function (response) {
+                                    response.data.pipe(fs.createWriteStream(audioFilePath, Buffer.from(audioResponse.data)));
+                                    console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
 
-                        //   });  
-                        //console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
+                                });  
+                        console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
 
                         // Aquí puedes agregar la lógica para procesar el archivo de audio
                         //const transcription = await transcribeAudio(audioFilePath);
