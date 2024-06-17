@@ -45,7 +45,7 @@ app.post('/webhook', async (req, res) => {
           const messages = message.entry[0].changes[0].value.messages;
           for (let msg of messages) {
                   const from = msg.from; // Número de teléfono del remitente
-                  //console.log(msg);
+                  console.log(msg);
                   if (msg.type === 'audio') {
                       const audioId = msg.audio.id; // ID del mensaje de audio
                       const mimeType = msg.audio.mime_type; // Tipo MIME del audio
@@ -85,7 +85,8 @@ app.post('/webhook', async (req, res) => {
                     }
                 } else if (msg.type === 'text')  {
                     const message = msg.text.body; // Texto del mensaje
-                    if(msg.text.body == 'resumir') {
+                    console.log(message);
+                    if(msg.text.body = 'Resumir' ) {
                       const transcription = await transcribeAudio(audioFilePath);
                       console.log(transcription);
                     } else {
