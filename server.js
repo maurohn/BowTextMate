@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 //Global variables
 const token_whatsapp = process.env.WHATSAPP_APPLICATION_CREDENTIALS;
 const google_cloud_key = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-const url_whatsapp = "https://graph.facebook.com/v19.0/";
+const url_whatsapp = "https://graph.facebook.com/v20.0/";
 // Ruta donde se guardará el nuevo archivo de audio
 const audioFilePath = path.join(__dirname, 'audio_from_whatsapp.ogg');
 // Configurar el cliente de Google Cloud Speech
@@ -117,7 +117,7 @@ async function transcribeAudio(audioFile) {
 }
 
 async function sendTextMessage(to, text) {
-  const url = url_whatsapp + 'messages';
+  const url = url_whatsapp + '368320819689944/messages';
     // Datos del mensaje que deseas enviar
     const data = {
         messaging_product: "whatsapp",
