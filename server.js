@@ -74,7 +74,9 @@ app.post('/webhook', async (req, res) => {
                                
                         const audioBuffer = Buffer.from(audioResponse.data);
                         //console.log('audioBuffer:', audioBuffer);
-                        const transcription = await transcribeAudio(audioBuffer);
+                        //const transcription = await transcribeAudio(audioBuffer);
+                        const transcription = await transcribeAudioCGPT(audioBuffer);
+                        
                         console.log(transcription);
                         await sendTextMessage(msg.from, transcription);
 
@@ -125,24 +127,12 @@ async function transcribeAudio(audioFile) {
 }
 
 async function transcribeAudioCGPT(audioFile) {
-    const audio = {
-        content: audioFile.toString('base64'),
-    };
-    const config = {
-        encoding: 'OGG_OPUS',
-        languageCode: 'es-AR',
-        sampleRateHertz: 16000,
-    };
-    const request = {
-        audio: audio,
-        config: config,
-    };
-
-    const [response] = await client.recognize(request);
-    const transcription = response.results
-        .map(result => result.alternatives[0].transcript)
-        .join('\n');
-    //console.log(`Transcription: ${transcription}`);
+    const openai = new OpenAI();
+    const transcription = await openai.audio.transcriptions.create({
+        file: audioFile,
+        model: "whisper-1",
+      });
+    
     return transcription;
 }
 
