@@ -47,7 +47,7 @@ app.post('/webhook', async (req, res) => {
         const messages = message.entry[0].changes[0].value.messages;
         for (let msg of messages) {
                 const from = msg.from; // Número de teléfono del remitente
-                console.log(msg);
+                //console.log(msg);
                 if (msg.type === 'audio') {
                     const audioId = msg.audio.id; // ID del mensaje de audio
                     const mimeType = msg.audio.mime_type; // Tipo MIME del audio
@@ -75,7 +75,7 @@ app.post('/webhook', async (req, res) => {
                         const audioBuffer = Buffer.from(audioResponse.data);
                         //console.log('audioBuffer:', audioBuffer);
                         const transcription = await transcribeAudio(audioBuffer);
-                        console.log(transcription);
+                        //console.log(transcription);
                         await sendTextMessage(msg.from, transcription);
 
                     } catch (error) {
@@ -86,14 +86,14 @@ app.post('/webhook', async (req, res) => {
                     const message = msg.text.body; // Texto del mensaje
                     const gptResponse = await chatGPTProcessing(message);
                     await sendTextMessage(msg.from, gptResponse.message.content);
-                    console.log(`Message from ${from}: ${message}`);
+                   // console.log(`Message from ${from}: ${message}`);
                     
                     // Aquí puedes agregar la lógica para procesar el mensaje
                    
                 } else {
                     const message = msg.text.body; // Texto del mensaje
                     await sendTextMessage(msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
-                    console.log(`Message from ${from}: ${message}`);
+                    //console.log(`Message from ${from}: ${message}`);
                 }
 
                 // Responder con un 200 para confirmar la recepción del mensaje
