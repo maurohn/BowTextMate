@@ -128,7 +128,7 @@ async function transcribeAudio(audioFile) {
 async function transcribeAudioGPT(audioFile) {
     const audioBytes = audioFile.toString('base64');
 
-    //console.log(audioBytes); 
+    console.log(audioBytes); 
     const openai = new OpenAI();
     try {
     const transcription = await openai.audio.transcriptions.create({
