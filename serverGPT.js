@@ -159,16 +159,13 @@ async function transcribeAudio(audioFilePath) {
   async function chatGPTProcessing(user_text) {
       const openai = new OpenAI();
       const completion = await openai.chat.completions.create({
-      messages=[
-        {role: "system", content: "Contestamoe como si fueras jarvis de ironman"},
-        {role: "user", content: user_text}
-      ],
-      model: "gpt-3.5-turbo-0125",
+        messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"},
+                   {role: "user", content: user_text }],
+        model: "gpt-3.5-turbo",
     });
     return completion.choices[0];
     //console.log(completion.choices[0]);
   }
-  
   
 
 const PORT = process.env.PORT || 3000;
