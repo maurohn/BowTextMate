@@ -69,7 +69,7 @@ app.post('/webhook', async (req, res) => {
 
 
                         console.log('URL:',url_whatsapp.data.url);
-                        const audioResponse = await axios.get({url: url_whatsapp.data.url,
+                        const audioResponse = await axios.get({url_whatsapp.data.url,
                                 headers: {
                                     'Authorization': `Bearer ${token_whatsapp}`,
                                     "User-Agent":
