@@ -122,7 +122,7 @@ async function transcribeAudio(audioFile) {
     return transcription;
 }
 
-async function transcribeAudioCGPT(audioFile, openai) {
+async function transcribeAudioCGPT(audioFile) {
  //OPENAI create
     const openai = new OpenAI();
     const transcription = await openai.audio.transcriptions.create({
