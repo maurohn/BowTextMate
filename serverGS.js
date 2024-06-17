@@ -55,9 +55,6 @@ app.post('/webhook', async (req, res) => {
                     const mimeType = msg.audio.mime_type; // Tipo MIME del audio
                     const url = url_whatsapp + audioId;
                     try {
-             
-                         
-                        // Paso 2: Descargar el archivo que contiene la url de audio utilizando la URL obtenida
                         const url_whatsapp_audio = await axios.get(url, {
                             headers: {
                                 'Authorization': `Bearer ${token_whatsapp}`,
@@ -66,8 +63,6 @@ app.post('/webhook', async (req, res) => {
                             // "NONISV|MyBot|MyBot/12.0",
                             }
                         });
-
-
                         console.log('URL:',url_whatsapp_audio.data.url);
                         const audioResponse = await axios.get(url_whatsapp_audio.data.url, {
                             headers: {
@@ -80,13 +75,10 @@ app.post('/webhook', async (req, res) => {
                         });
                                
                         console.log('RESPONSE:', audioResponse);
-
-                                
                         
-
-                        // Aquí puedes agregar la lógica para procesar el archivo de audio
-                        //const transcription = await transcribeAudio(audioFilePath);
-                        //console.log(transcription);
+                        const audioBuffer = await audioResponse.data.buffer();
+                        const transcription = await transcribeAudio(audioBuffer);
+                        console.log(transcription);
                         // await sendTextMessage(msg.from, transcription);
 
                     } catch (error) {
@@ -106,30 +98,24 @@ app.post('/webhook', async (req, res) => {
 });
 
 async function transcribeAudio(audioFile) {
-    const audioBytes = fs.readFileSync(audioFile).toString('base64');
-
     const audio = {
-        content: audioBytes,
+        content: audioFile.toString('base64'),
     };
-
     const config = {
-        encoding: 'OGG_OPUS',
-        languageCode: 'es-AR',
+        encoding: 'AMR_WB',
         sampleRateHertz: 16000,
+        languageCode: 'es-ES',
     };
-
     const request = {
         audio: audio,
         config: config,
     };
 
-    console.log(audio);
     const [response] = await client.recognize(request);
     const transcription = response.results
         .map(result => result.alternatives[0].transcript)
         .join('\n');
     console.log(`Transcription: ${transcription}`);
-    console.log(response.results);
     return transcription;
 }
 
