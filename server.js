@@ -42,8 +42,6 @@ app.get('/webhook', (req, res) => {
 
 app.post('/webhook', async (req, res) => {
     //console.log('Webhook received:', req.body);
-    //OPENAI create
-    const openai = new OpenAI();
     const message = req.body;
     if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
         const messages = message.entry[0].changes[0].value.messages;
@@ -77,7 +75,7 @@ app.post('/webhook', async (req, res) => {
                         const audioBuffer = Buffer.from(audioResponse.data);
                         //console.log('audioBuffer:', audioBuffer);
                         //const transcription = await transcribeAudio(audioBuffer);
-                        const transcription = await transcribeAudioCGPT(audioBuffer, openai);
+                        const transcription = await transcribeAudioCGPT(audioBuffer);
                         console.log(transcription);
                         await sendTextMessage(msg.from, transcription);
 
@@ -125,7 +123,8 @@ async function transcribeAudio(audioFile) {
 }
 
 async function transcribeAudioCGPT(audioFile, openai) {
-    
+ //OPENAI create
+    const openai = new OpenAI();
     const transcription = await openai.audio.transcriptions.create({
         file: audioFile.toString('base64'),
         model: "whisper-1",
