@@ -74,8 +74,7 @@ app.post('/webhook', async (req, res) => {
                                
                         const audioBuffer = Buffer.from(audioResponse.data);
                         //console.log('audioBuffer:', audioBuffer);
-                        //const transcription = await transcribeAudio(audioBuffer);
-                        const transcription = await transcribeAudioCGPT(audioBuffer);
+                        const transcription = await transcribeAudio(audioBuffer);
                         console.log(transcription);
                         await sendTextMessage(msg.from, transcription);
 
@@ -87,7 +86,9 @@ app.post('/webhook', async (req, res) => {
                     const message = msg.text.body; // Texto del mensaje
                     await sendTextMessage(msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
                     console.log(`Message from ${from}: ${message}`);
+                    
                     // Aquí puedes agregar la lógica para procesar el mensaje
+                    await chatGPTProcessing(message);
                 } else {
                     const message = msg.text.body; // Texto del mensaje
                     await sendTextMessage(msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
@@ -123,13 +124,24 @@ async function transcribeAudio(audioFile) {
 }
 
 async function transcribeAudioCGPT(audioFile) {
- //OPENAI create
-    const openai = new OpenAI();
-    const transcription = await openai.audio.transcriptions.create({
-        file: audioFile.toString('base64'),
-        model: "whisper-1",
-      });
-    
+    const audio = {
+        content: audioFile.toString('base64'),
+    };
+    const config = {
+        encoding: 'OGG_OPUS',
+        languageCode: 'es-AR',
+        sampleRateHertz: 16000,
+    };
+    const request = {
+        audio: audio,
+        config: config,
+    };
+
+    const [response] = await client.recognize(request);
+    const transcription = response.results
+        .map(result => result.alternatives[0].transcript)
+        .join('\n');
+    //console.log(`Transcription: ${transcription}`);
     return transcription;
 }
 
@@ -175,6 +187,7 @@ async function chatGPTProcessing(user_text) {
 
   console.log(completion.choices[0]);
 }
+
 
 
 const PORT = process.env.PORT || 3000;
