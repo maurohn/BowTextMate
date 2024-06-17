@@ -137,7 +137,7 @@ async function sendTextMessage(to, text) {
     });
 
     if (!response.ok) {
-        console.error('Error enviando mensaje:', response.statusText);
+        //console.error('Error enviando mensaje:', response.statusText);
     } else {
         const responseData = await response.json();
         console.log('Mensaje enviado:', responseData);

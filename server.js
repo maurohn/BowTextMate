@@ -83,6 +83,7 @@ app.post('/webhook', async (req, res) => {
                     }
                 } else if (msg.type === 'text')  {
                     const message = msg.text.body; // Texto del mensaje
+                    await sendTextMessage(msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando inteligencia artificial y muchas funcines mas!!");
                     console.log(`Message from ${from}: ${message}`);
                     // Aquí puedes agregar la lógica para procesar el mensaje
                 }
