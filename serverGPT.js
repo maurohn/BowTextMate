@@ -46,7 +46,7 @@ app.post('/webhook', async (req, res) => {
           for (let msg of messages) {
                   const from = msg.from; // Número de teléfono del remitente
                   const nameFile = from +'.ogg';
-                  const audioFilePath = path.join(__dirname, nameFile);
+                  const audioFilePath = path.join(__dirname, 'pp.ogg');
                   //console.log(msg);
                   if (msg.type === 'audio') {
                       const audioId = msg.audio.id; // ID del mensaje de audio
