@@ -68,7 +68,7 @@ app.post('/webhook', async (req, res) => {
                         });
 
 
-                        console.log('URL:',url_whatsapp);
+                        console.log('URL:',url_whatsapp.url);
                         //   const audioResponse = axios({
                         //     method: 'get',
                         //     url: url_whatsapp.data.url,
