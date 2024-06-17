@@ -129,7 +129,7 @@ async function transcribeAudio(audioFile) {
 async function transcribeAudioCGPT(audioFile) {
     const openai = new OpenAI();
     const transcription = await openai.audio.transcriptions.create({
-        file: audioFile,
+        file: audioFile.toString('base64'),
         model: "whisper-1",
       });
     
