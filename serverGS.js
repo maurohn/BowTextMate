@@ -74,9 +74,10 @@ app.post('/webhook', async (req, res) => {
                              responseType: 'arraybuffer',
                         });
                                
-                        console.log('RESPONSE:', audioResponse);
+                        //console.log('RESPONSE:', audioResponse);
                         
                         const audioBuffer = Buffer.from(audioResponse.data);
+                        console.log('audioBuffer:', audioBuffer);
                         const transcription = await transcribeAudio(audioBuffer);
                         console.log(transcription);
                         // await sendTextMessage(msg.from, transcription);
