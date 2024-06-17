@@ -112,10 +112,10 @@ app.post('/webhook', async (req, res) => {
                     if(msg.text.body === 'Resumir' || msg.text.body === 'resumir' ) {
                       const transcription = await transcribeAudio(audioFilePath);
                       //console.log(transcription);
-                      const gptResponse = await chatGPTProcessing(message + '; ' + transcription);
+                      const gptResponse = await chatGPTProcessing(req, message + '; ' + transcription);
                       await sendTextMessage(msg.from, gptResponse.message.content);
                     } else {
-                      const gptResponse = await chatGPTProcessing(message);
+                      const gptResponse = await chatGPTProcessing(req, message);
                       await sendTextMessage(msg.from, gptResponse.message.content);
                     }
                    
@@ -184,7 +184,8 @@ async function transcribeAudio(audioFilePath) {
     //                {role: "user", content: user_text }],
     //     model: "gpt-3.5-turbo",
     // };
-    const conversation = req.session.conversation;
+    console.log(req)
+    conversation = req.session.conversation;
     console.log(conversation);
     conversation.messages.push({role: "user", content: user_text });
     const completion = await openai.chat.completions.create(conversation);
