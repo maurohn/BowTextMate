@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const speech = require('@google-cloud/speech');
-const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 
@@ -112,7 +111,7 @@ async function transcribeAudio(audioFile) {
     const transcription = response.results
         .map(result => result.alternatives[0].transcript)
         .join('\n');
-    console.log(`Transcription: ${transcription}`);
+    //console.log(`Transcription: ${transcription}`);
     return transcription;
 }
 
@@ -138,7 +137,7 @@ async function sendTextMessage(to, text) {
   // Hacer la solicitud POST usando Axios
   axios.post(url, data, config)
     .then(response => {
-      console.log('Mensaje enviado:', response.data);
+      //console.log('Mensaje enviado:', response.data);
     })
     .catch(error => {
       console.error('Error al enviar el mensaje:', error.response ? error.response.data : error.message);
