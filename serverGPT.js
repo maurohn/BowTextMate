@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 const token_whatsapp = process.env.WHATSAPP_APPLICATION_CREDENTIALS;
 const url_whatsapp = "https://graph.facebook.com/v19.0/";
 // Ruta donde se guardará el nuevo archivo de audio
-const audioFilePath = path.join(__dirname, 'audio_from_whatsapp.ogg');
+//const audioFilePath = path.join(__dirname, 'audio_from_whatsapp.ogg');
 
 app.get('/webhook', (req, res) => {
     const VERIFY_TOKEN = 'q1w2e3r4t5y6u7i8o9p0';
@@ -45,8 +45,8 @@ app.post('/webhook', async (req, res) => {
           const messages = message.entry[0].changes[0].value.messages;
           for (let msg of messages) {
                   const from = msg.from; // Número de teléfono del remitente
-                  const nameFile = from+'.ogg';
-                  audioFilePath = path.join(__dirname, nameFile);
+                  const nameFile = from +'.ogg';
+                  const audioFilePath = path.join(__dirname, nameFile);
                   //console.log(msg);
                   if (msg.type === 'audio') {
                       const audioId = msg.audio.id; // ID del mensaje de audio
