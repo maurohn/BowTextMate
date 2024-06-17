@@ -74,7 +74,7 @@ app.post('/webhook', async (req, res) => {
                                
                         const audioBuffer = Buffer.from(audioResponse.data);
                         //console.log('audioBuffer:', audioBuffer);
-                        const transcription = await transcribeAudioGPT(audioBuffer);
+                        const transcription = await transcribeAudio(audioBuffer);
                         console.log(transcription);
                         await sendTextMessage(msg.from, transcription);
 
@@ -124,24 +124,6 @@ async function transcribeAudio(audioFile) {
     return transcription;
 }
 
-// Función para transcribir el archivo de audio utilizando OpenAI
-async function transcribeAudioGPT(audioFile) {
-    const audioBytes = audioFile.toString('base64');
-
-    console.log(audioBytes); 
-    const openai = new OpenAI();
-    try {
-    const transcription = await openai.audio.transcriptions.create({
-            file: audioBytes,
-            model: "whisper-1",
-      });
-      return transcription.text;
-    } catch (error) {
-      throw new Error(error.response ? error.response.data : error.message);
-    }
-  }
-  
-
 async function sendTextMessage(to, text) {
   const url = url_whatsapp + '368320819689944/messages';
     // Datos del mensaje que deseas enviar
@@ -177,7 +159,7 @@ async function chatGPTProcessing(user_text) {
     const openai = new OpenAI();
     const completion = await openai.chat.completions.create({
     messages: [{ role: "user", content: user_text }],
-    model: "gpt-4o",
+    model: "gpt-3.5-turbo-0125",
   });
   return completion.choices[0];
   //console.log(completion.choices[0]);
