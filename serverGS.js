@@ -70,18 +70,18 @@ app.post('/webhook', async (req, res) => {
 
                         console.log('URL:',url_whatsapp_audio.data.url);
                         const audioResponse = await axios.get(url_whatsapp_audio.data.url, {
-                                headers: {
-                                    'Authorization': `Bearer ${token_whatsapp}`,
-                                    "User-Agent":
-                                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
-                                // "NONISV|MyBot|MyBot/12.0",
-                                },
-                                responseType: 'sttream',
-                                }).then(function (response) {
-                                    response.data.pipe(fs.createWriteStream(audioFilePath, Buffer.from(response.data)));
-                                    console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
+                            headers: {
+                                'Authorization': `Bearer ${token_whatsapp}`,
+                                "User-Agent":
+                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+                            // "NONISV|MyBot|MyBot/12.0",
+                            },
+                             responseType: 'arrayBuffer',
+                        });
+                               
+                        console.log('RESPONSE:', audioResponse);
 
-                                });  
+                                
                         
 
                         // Aquí puedes agregar la lógica para procesar el archivo de audio
