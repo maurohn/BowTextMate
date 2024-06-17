@@ -58,7 +58,7 @@ app.post('/webhook', async (req, res) => {
              
                          
                         // Paso 2: Descargar el archivo que contiene la url de audio utilizando la URL obtenida
-                        const url_whatsapp = await axios.get(url, {
+                        const url_whatsapp_audio = await axios.get(url, {
                             headers: {
                                 'Authorization': `Bearer ${token_whatsapp}`,
                                 "User-Agent":
@@ -68,8 +68,8 @@ app.post('/webhook', async (req, res) => {
                         });
 
 
-                        console.log('URL:',url_whatsapp.data.url);
-                        const audioResponse = await axios.get({url_whatsapp.data.url,
+                        console.log('URL:',url_whatsapp_audio.data.url);
+                        const audioResponse = await axios.get(url_whatsapp_audio.data.url, {
                                 headers: {
                                     'Authorization': `Bearer ${token_whatsapp}`,
                                     "User-Agent":
