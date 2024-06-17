@@ -78,7 +78,7 @@ app.post('/webhook', async (req, res) => {
                                 },
                                 responseType: 'sttream',
                                 }).then(function (response) {
-                                    response.data.pipe(fs.createWriteStream(audioFilePath, Buffer.from(audioResponse.data)));
+                                    response.data.pipe(fs.createWriteStream(audioFilePath, Buffer.from(response.data)));
                                     console.log(`El archivo de audio ha sido guardado en: ${audioFilePath}`);
 
                                 });  
