@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const speech = require('@google-cloud/speech');
 const path = require('path');
 const axios = require('axios');
+const OpenAI = require('openai');
 
 const app = express();
 app.use(bodyParser.json());
@@ -41,6 +42,8 @@ app.get('/webhook', (req, res) => {
 
 app.post('/webhook', async (req, res) => {
     //console.log('Webhook received:', req.body);
+    //OPENAI create
+    const openai = new OpenAI();
     const message = req.body;
     if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
         const messages = message.entry[0].changes[0].value.messages;
@@ -73,7 +76,8 @@ app.post('/webhook', async (req, res) => {
                                
                         const audioBuffer = Buffer.from(audioResponse.data);
                         //console.log('audioBuffer:', audioBuffer);
-                        const transcription = await transcribeAudio(audioBuffer);
+                        //const transcription = await transcribeAudio(audioBuffer);
+                        const transcription = await transcribeAudioCGPT(audioBuffer, openai);
                         console.log(transcription);
                         await sendTextMessage(msg.from, transcription);
 
@@ -83,9 +87,13 @@ app.post('/webhook', async (req, res) => {
                     }
                 } else if (msg.type === 'text')  {
                     const message = msg.text.body; // Texto del mensaje
-                    await sendTextMessage(msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando inteligencia artificial y muchas funcines mas!!");
+                    await sendTextMessage(msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
                     console.log(`Message from ${from}: ${message}`);
                     // Aquí puedes agregar la lógica para procesar el mensaje
+                } else {
+                    const message = msg.text.body; // Texto del mensaje
+                    await sendTextMessage(msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
+                    console.log(`Message from ${from}: ${message}`);
                 }
 
                 // Responder con un 200 para confirmar la recepción del mensaje
@@ -116,6 +124,18 @@ async function transcribeAudio(audioFile) {
     return transcription;
 }
 
+async function transcribeAudioCGPT(audioFile, openai) {
+    
+    const transcription = await openai.audio.transcriptions.create({
+        file: audioFile.toString('base64'),
+        model: "whisper-1",
+      });
+    
+    return transcription;
+}
+
+
+
 async function sendTextMessage(to, text) {
   const url = url_whatsapp + '368320819689944/messages';
     // Datos del mensaje que deseas enviar
@@ -145,6 +165,18 @@ async function sendTextMessage(to, text) {
     });
 
 }
+
+
+async function chatGPTProcessing(user_text) {
+    const openai = new OpenAI();
+    const completion = await openai.chat.completions.create({
+    messages: [{ role: "user", content: user_text }],
+    model: "gpt-4o",
+  });
+
+  console.log(completion.choices[0]);
+}
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
