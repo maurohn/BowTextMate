@@ -120,13 +120,20 @@ app.post('/webhook', async (req, res) => {
                     }
                 } else if (msg.type === 'text')  {
                       const message = msg.text.body; // Texto del mensaje
-                      console.log(msg.text.body.split("|")[0]);
                     if(msg.text.body === '#reiniciar' || msg.text.body === '#Reiniciar') {
                       await chatGPTProcessing(conversationId, req, 'Cerrar Conversacion');
                     } else if(msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
                       await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
                     } else if(msg.text.body.split("|")[0] === '###TIPO') {
-                      console.log(msg.text.body.split("|"));
+                      for (let conversation_ of conversationArray) {
+                        if(conversation_.conversationId == conversationId) {
+                          conversation_.conversation.messages.push({role: "system", content: msg.text.body.split("|")[1]});
+                          //save conversation to session
+                          console.log(conversation_.conversation.messages);
+                          req.session.conversationArray = conversationArray;
+                          return completion.choices[0];
+                        }
+                     }  
                       //await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
                     } 
                     else {
