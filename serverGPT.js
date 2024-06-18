@@ -223,9 +223,9 @@ async function transcribeAudio(conversationId, req, audioFilePath) {
        //console.log('conversation', conversation_);
          if(conversation_.conversationId == conversationId) {
            // console.log(conversation_.conversation);
-           conversation_conversation.messages.push({role: "user", content: user_text });
-           const completion = await openai.chat.completions.create(conversation_conversation);
-           conversation_conversation.messages.push({role: "assistant", content: completion.choices[0].message.content });
+           conversation_.conversation.messages.push({role: "user", content: user_text });
+           const completion = await openai.chat.completions.create(conversation_.conversation);
+           conversation_.conversation.messages.push({role: "assistant", content: completion.choices[0].message.content });
            //save conversation to session
            req.session.conversationArray = conversationArray;
            return completion.choices[0];
