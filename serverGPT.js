@@ -83,7 +83,7 @@ app.post('/webhook', async (req, res) => {
                      conversationArray.push({conversationId: conversationId, conversation: conversation});
                      sessionData.conversationArray = conversationArray;
                   // }
-                  console.log(findSession(conversationId));
+                  console.log('CONVERSATION:',findSession(conversationId));
                   //console.log(conversationArray);
                   if (msg.type === 'audio') {
                       const audioId = msg.audio.id; // ID del mensaje de audio
