@@ -173,7 +173,7 @@ async function transcribeAudio(conversationId, req, audioFilePath) {
               conversation_.conversation.messages.push({role: "assistant", content: transcription.text }); 
             //save conversation to session
             req.session.conversationArray = conversationArray;
-            console.log(conversationArray);
+            //console.log(conversationArray);
             return "TRANSCRIPCION: " + transcription.text;
           } catch (error) {
             throw new Error(error.response ? error.response.data : error.message);
@@ -217,14 +217,14 @@ async function transcribeAudio(conversationId, req, audioFilePath) {
   async function chatGPTProcessing(conversationId, req, user_text) {
     const openai = new OpenAI();
     const conversationArray = req.session.conversationArray;
-    console.log('conversationArray:', conversationArray);
+    //console.log('conversationArray:', conversationArray);
      for (let conversation_ of conversationArray) {
          if(conversation_.conversationId === conversationId) {
            conversation_.conversation.messages.push({role: "user", content: user_text });
            const completion = await openai.chat.completions.create(conversation_.conversation);
            conversation_.conversation.messages.push({role: "assistant", content: completion.choices[0].message.content });
            //save conversation to session
-           console.log(conversation_.conversation.messages);
+           //console.log(conversation_.conversation.messages);
            req.session.conversationArray = conversationArray;
            return completion.choices[0];
          }
