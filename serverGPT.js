@@ -123,7 +123,7 @@ app.post('/webhook', async (req, res) => {
                       };
                       //console.log('Conversation:', conversation.messages);
                       req.session.conversation = conversation;
-                      await chatGPTProcessing(req, '');
+                      await chatGPTProcessing(req, 'Cerrar Conversacion');
                       req.session.save();
                       req.session.destroy();
                     } else if(msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
