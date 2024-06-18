@@ -131,7 +131,6 @@ app.post('/webhook', async (req, res) => {
                           //save conversation to session
                           console.log(conversation_.conversation.messages);
                           req.session.conversationArray = conversationArray;
-                          return completion.choices[0];
                         }
                      }  
                       //await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
