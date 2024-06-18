@@ -79,7 +79,7 @@ app.post('/webhook', async (req, res) => {
                   const conversationId = from;
                   const conversationArray = [{conversationId: conversationId, conversation: conversation}];
                   sessionData.conversationArray = conversationArray;
-                  console.log(conversationArray);
+                  //console.log(conversationArray);
                   if (msg.type === 'audio') {
                       const audioId = msg.audio.id; // ID del mensaje de audio
                       const mimeType = msg.audio.mime_type; // Tipo MIME del audio
