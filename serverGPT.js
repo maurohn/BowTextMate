@@ -78,8 +78,10 @@ app.post('/webhook', async (req, res) => {
                   const nameFile = from.toString() +'.ogg';
                   const audioFilePath = path.join(__dirname, nameFile);
                   const conversationId = from;
-                  conversationArray.push({conversationId: conversationId, conversation: conversation});
-                  sessionData.conversationArray = conversationArray;
+                  if(conversationArray.find(conversationId) != conversationId ){
+                    conversationArray.push({conversationId: conversationId, conversation: conversation});
+                    sessionData.conversationArray = conversationArray;
+                  }
                   //console.log(conversationArray);
                   if (msg.type === 'audio') {
                       const audioId = msg.audio.id; // ID del mensaje de audio
