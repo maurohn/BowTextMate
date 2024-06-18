@@ -104,6 +104,7 @@ app.post('/webhook', async (req, res) => {
 
                     } catch (error) {
                         console.error('Error fetching audio:', error);
+                        req.session.destroy();
                         res.sendStatus(404);
                     }
                 } else if (msg.type === 'text')  {
@@ -114,7 +115,12 @@ app.post('/webhook', async (req, res) => {
                       //console.log(transcription);
                       const gptResponse = await chatGPTProcessing(req, message + '; ' + transcription);
                       await sendTextMessage(msg.from, gptResponse.message.content);
-                    } else {
+                    } else if(msg.text.body === '#reiniciar' || msg.text.body === '#Reiniciar') {
+                      req.session.destroy();
+                    } else if(msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
+                      await sendTextMessage(msg.from, 'Puedes enviarme un audio un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
+                    } 
+                    else {
                       const gptResponse = await chatGPTProcessing(req, message);
                       await sendTextMessage(msg.from, gptResponse.message.content);
                     }
@@ -178,19 +184,11 @@ async function transcribeAudio(audioFilePath) {
   
   
   async function chatGPTProcessing(req, user_text) {
-      const openai = new OpenAI();
-    //   const conversation ={
-    //     messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"},
-    //                {role: "user", content: user_text }],
-    //     model: "gpt-3.5-turbo",
-    // };
-    console.log(req)
+    const openai = new OpenAI();
     const conversation = req.session.conversation;
-    console.log(conversation);
     conversation.messages.push({role: "user", content: user_text });
     const completion = await openai.chat.completions.create(conversation);
     conversation.messages.push({role: "assistant", content: completion.choices[0].message.content });
-    console.log(conversation);
     //save conversation to session
     req.session.conversation = conversation;
     req.session.save();
