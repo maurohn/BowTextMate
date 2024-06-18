@@ -185,7 +185,7 @@ async function transcribeAudio(audioFilePath) {
     //     model: "gpt-3.5-turbo",
     // };
     console.log(req)
-    conversation = req.session.conversation;
+    const conversation = req.session.conversation;
     console.log(conversation);
     conversation.messages.push({role: "user", content: user_text });
     const completion = await openai.chat.completions.create(conversation);
