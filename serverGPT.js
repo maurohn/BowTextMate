@@ -110,15 +110,22 @@ app.post('/webhook', async (req, res) => {
                 } else if (msg.type === 'text')  {
                     const message = msg.text.body; // Texto del mensaje
                     //console.log(message);
-                    if(msg.text.body === 'Resumir' || msg.text.body === 'resumir' ) {
-                      const transcription = await transcribeAudio(audioFilePath);
-                      //console.log(transcription);
-                      const gptResponse = await chatGPTProcessing(req, message + '; ' + transcription);
-                      await sendTextMessage(msg.from, gptResponse.message.content);
-                    } else if(msg.text.body === '#reiniciar' || msg.text.body === '#Reiniciar') {
+                    // if(msg.text.body === 'Resumir' || msg.text.body === 'resumir' ) {
+                    //   const transcription = await transcribeAudio(audioFilePath);
+                    //   //console.log(transcription);
+                    //   const gptResponse = await chatGPTProcessing(req, message + '; ' + transcription);
+                    //   await sendTextMessage(msg.from, gptResponse.message.content);
+                    // }
+                      if(msg.text.body === '#reiniciar' || msg.text.body === '#Reiniciar') {
+                      const conversation = {
+                        messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"}],
+                        model: "gpt-3.5-turbo",
+                      };
+                      req.session.conversation = conversation;
                       req.session.destroy();
+                      req.session.save();
                     } else if(msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
-                      await sendTextMessage(msg.from, 'Puedes enviarme un audio un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
+                      await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
                     } 
                     else {
                       const gptResponse = await chatGPTProcessing(req, message);
@@ -139,13 +146,18 @@ app.post('/webhook', async (req, res) => {
 });
 
 // Función para transcribir el archivo de audio utilizando OpenAI
-async function transcribeAudio(audioFilePath) {
+async function transcribeAudio(req, audioFilePath) {
     const openai = new OpenAI();
+    const conversation = req.session.conversation;
     try {
         const transcription = await openai.audio.transcriptions.create({
             file: fs.createReadStream(audioFilePath),
             model: "whisper-1",
           });
+      conversation.messages.push({role: "assistant", content: transcription.text }); 
+      //save conversation to session
+      req.session.conversation = conversation;
+      req.session.save();   
       return transcription.text;
     } catch (error) {
       throw new Error(error.response ? error.response.data : error.message);
