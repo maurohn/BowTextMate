@@ -120,7 +120,7 @@ app.post('/webhook', async (req, res) => {
                     }
                 } else if (msg.type === 'text')  {
                       const message = msg.text.body; // Texto del mensaje
-                      console.log(msg.text.body.split("|"));
+                      console.log(msg.text.body.split("|")[0]);
                     if(msg.text.body === '#reiniciar' || msg.text.body === '#Reiniciar') {
                       await chatGPTProcessing(conversationId, req, 'Cerrar Conversacion');
                     } else if(msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
