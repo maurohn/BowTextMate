@@ -119,14 +119,7 @@ app.post('/webhook', async (req, res) => {
                         res.sendStatus(404);
                     }
                 } else if (msg.type === 'text')  {
-                    const message = msg.text.body; // Texto del mensaje
-                    //console.log(message);
-                    // if(msg.text.body === 'Resumir' || msg.text.body === 'resumir' ) {
-                    //   const transcription = await transcribeAudio(audioFilePath);
-                    //   //console.log(transcription);
-                    //   const gptResponse = await chatGPTProcessing(req, message + '; ' + transcription);
-                    //   await sendTextMessage(msg.from, gptResponse.message.content);
-                    // }
+                      const message = msg.text.body; // Texto del mensaje
                       if(msg.text.body === '#reiniciar' || msg.text.body === '#Reiniciar') {
                       const conversation = {
                         messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"}],
@@ -141,9 +134,7 @@ app.post('/webhook', async (req, res) => {
                     else {
                       const gptResponse = await chatGPTProcessing(conversationId, req, message);
                       await sendTextMessage(msg.from, gptResponse.message.content);
-                    }
-                   
-                    
+                    }       
                 } else {
                     const message = msg.text.body; // Texto del mensaje
                     await sendTextMessage(msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
@@ -221,6 +212,7 @@ async function transcribeAudio(conversationId, req, audioFilePath) {
            const completion = await openai.chat.completions.create(conversation_.conversation);
            conversation_.conversation.messages.push({role: "assistant", content: completion.choices[0].message.content });
            //save conversation to session
+           console.log(conversation_.conversation.messages);
            req.session.conversationArray = conversationArray;
            return completion.choices[0];
          }
