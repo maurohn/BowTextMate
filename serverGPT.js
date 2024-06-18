@@ -83,7 +83,7 @@ app.post('/webhook', async (req, res) => {
                      conversationArray.push({conversationId: conversationId, conversation: conversation});
                      sessionData.conversationArray = conversationArray;
                   // }
-                  console.log(conversationArray.find(conversationId));
+                  console.log(findSession(conversationId));
                   //console.log(conversationArray);
                   if (msg.type === 'audio') {
                       const audioId = msg.audio.id; // ID del mensaje de audio
@@ -155,6 +155,10 @@ app.post('/webhook', async (req, res) => {
             }
     }
 });
+
+function findSession(conversationId) {
+  return conversationArray.find((conversation) => conversation.conversationId === conversationId)
+}
 
 // Función para transcribir el archivo de audio utilizando OpenAI
 async function transcribeAudio(conversationId, req, audioFilePath) {
