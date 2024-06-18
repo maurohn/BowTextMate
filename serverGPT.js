@@ -121,8 +121,9 @@ app.post('/webhook', async (req, res) => {
                         messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"}],
                         model: "gpt-3.5-turbo",
                       };
-                      console.log('Conversation:', conversation.messages);
+                      //console.log('Conversation:', conversation.messages);
                       req.session.conversation = conversation;
+                      await chatGPTProcessing(req, '');
                       req.session.save();
                       req.session.destroy();
                     } else if(msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
