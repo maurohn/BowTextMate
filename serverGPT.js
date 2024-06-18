@@ -126,7 +126,7 @@ app.post('/webhook', async (req, res) => {
                       await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
                     } else if(msg.text.body.split("|")[0] === '###TIPO') {
                       for (let conversation_ of conversationArray) {
-                        if(conversation_.conversationId == conversationId) {
+                        if(conversation_.conversationId === conversationId) {
                           conversation_.conversation.messages.push({role: "system", content: msg.text.body.split("|")[1]});
                           //save conversation to session
                           console.log(conversation_.conversation.messages);
@@ -156,7 +156,7 @@ async function transcribeAudio(conversationId, req, audioFilePath) {
     const openai = new OpenAI();
     const conversationArray = req.session.conversationArray;
     for (let conversation_ of conversationArray) {
-        if(conversation_.conversationId == conversationId) {
+        if(conversation_.conversationId === conversationId) {
            try {
             const transcription = await openai.audio.transcriptions.create({
                 file: fs.createReadStream(audioFilePath),
@@ -211,7 +211,7 @@ async function transcribeAudio(conversationId, req, audioFilePath) {
     const conversationArray = req.session.conversationArray;
     console.log('conversationArray:', conversationArray);
      for (let conversation_ of conversationArray) {
-         if(conversation_.conversationId == conversationId) {
+         if(conversation_.conversationId === conversationId) {
            conversation_.conversation.messages.push({role: "user", content: user_text });
            const completion = await openai.chat.completions.create(conversation_.conversation);
            conversation_.conversation.messages.push({role: "assistant", content: completion.choices[0].message.content });
