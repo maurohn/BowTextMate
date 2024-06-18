@@ -35,7 +35,7 @@ const url_whatsapp = "https://graph.facebook.com/v19.0/";
 
 
 
-const conversationArray = [{conversationId: 0, conversation: conversation}];
+const conversationArray = [{conversationId: 0, conversation: {}}];
 
 app.get('/webhook', (req, res) => {
     const VERIFY_TOKEN = 'q1w2e3r4t5y6u7i8o9p0';
