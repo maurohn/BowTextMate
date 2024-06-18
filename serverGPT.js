@@ -98,7 +98,7 @@ app.post('/webhook', async (req, res) => {
                           // Paso 3: Escribir el buffer de audio en un archivo en el sistema de archivos local
                           fs.writeFileSync(audioFilePath, Buffer.from(audioBuffer));
                           // Aquí puedes agregar la lógica para procesar el archivo de audio
-                          const transcription = await transcribeAudio(audioFilePath);
+                          const transcription = await transcribeAudio(req, audioFilePath);
                           //console.log(transcription);
                           await sendTextMessage(msg.from, transcription);
 
