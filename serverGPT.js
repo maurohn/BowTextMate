@@ -120,16 +120,13 @@ app.post('/webhook', async (req, res) => {
                     }
                 } else if (msg.type === 'text')  {
                       const message = msg.text.body; // Texto del mensaje
-                      if(msg.text.body === '#reiniciar' || msg.text.body === '#Reiniciar') {
-                      const conversation = {
-                        messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"}],
-                        model: "gpt-3.5-turbo",
-                      };
-                      //console.log('Conversation:', conversation.messages);
-                      //req.session.conversation = conversation;
+                    if(msg.text.body === '#reiniciar' || msg.text.body === '#Reiniciar') {
                       await chatGPTProcessing(conversationId, req, 'Cerrar Conversacion');
                     } else if(msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
                       await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
+                    } else if(msg.text.body.split("|")[0] === '###TIPO') {
+                      console.log(msg.text.body.split("|"));
+                      //await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
                     } 
                     else {
                       const gptResponse = await chatGPTProcessing(conversationId, req, message);
