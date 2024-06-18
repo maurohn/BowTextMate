@@ -15,9 +15,10 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use(session({
-    secret: "amar",
-    saveUninitialized: true,
-    resave: true
+  secret: "q1w2e3r4t5y6u7i8o9p0",
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 120000 } // session timeout of 120 seconds
 }));
 
 
@@ -31,11 +32,13 @@ const url_whatsapp = "https://graph.facebook.com/v19.0/";
 // Ruta donde se guardará el nuevo archivo de audio
 //const audioFilePath = path.join(__dirname, 'audio_from_whatsapp.ogg');
 
+
+
 const conversation = {
   messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"}],
   model: "gpt-3.5-turbo",
 };
-
+const conversationArray = [{conversationId: 0, conversation: conversation}];
 
 app.get('/webhook', (req, res) => {
     const VERIFY_TOKEN = 'q1w2e3r4t5y6u7i8o9p0';
@@ -57,10 +60,15 @@ app.get('/webhook', (req, res) => {
 
 app.post('/webhook', async (req, res) => {
       //Si la session no existe la guardo
-      if (!req.session.conversation) {
-        req.session.conversation = conversation;
-        req.session.save();
+      const sessionData = req.session;
+      if (!sessionData) {
+        sessionData.conversationArray = conversationArray;
+        req.session = sessionData;
+      } else {
+        sessionData.conversationArray = conversationArray;
+        req.session = sessionData;
       }
+      //console.log(sessionData);
       const message = req.body;
       if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
           const messages = message.entry[0].changes[0].value.messages;
@@ -68,7 +76,10 @@ app.post('/webhook', async (req, res) => {
                   const from = msg.from; // Número de teléfono del remitente
                   const nameFile = from.toString() +'.ogg';
                   const audioFilePath = path.join(__dirname, nameFile);
-                  //console.log(msg);
+                  const conversationId = from;
+                  const conversationArray = [{conversationId: conversationId, conversation: conversation}];
+                  sessionData.conversationArray = conversationArray;
+                  console.log(conversationArray);
                   if (msg.type === 'audio') {
                       const audioId = msg.audio.id; // ID del mensaje de audio
                       const mimeType = msg.audio.mime_type; // Tipo MIME del audio
@@ -98,7 +109,7 @@ app.post('/webhook', async (req, res) => {
                           // Paso 3: Escribir el buffer de audio en un archivo en el sistema de archivos local
                           fs.writeFileSync(audioFilePath, Buffer.from(audioBuffer));
                           // Aquí puedes agregar la lógica para procesar el archivo de audio
-                          const transcription = await transcribeAudio(req, audioFilePath);
+                          const transcription = await transcribeAudio(conversationId, req, audioFilePath);
                           //console.log(transcription);
                           await sendTextMessage(msg.from, transcription);
 
@@ -123,12 +134,12 @@ app.post('/webhook', async (req, res) => {
                       };
                       //console.log('Conversation:', conversation.messages);
                       //req.session.conversation = conversation;
-                      await chatGPTProcessing(req, 'Cerrar Conversacion');
+                      await chatGPTProcessing(conversationId, req, 'Cerrar Conversacion');
                     } else if(msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
                       await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
                     } 
                     else {
-                      const gptResponse = await chatGPTProcessing(req, message);
+                      const gptResponse = await chatGPTProcessing(conversationId, req, message);
                       await sendTextMessage(msg.from, gptResponse.message.content);
                     }
                    
@@ -146,22 +157,31 @@ app.post('/webhook', async (req, res) => {
 });
 
 // Función para transcribir el archivo de audio utilizando OpenAI
-async function transcribeAudio(req, audioFilePath) {
+async function transcribeAudio(conversationId, req, audioFilePath) {
     const openai = new OpenAI();
-    const conversation = req.session.conversation;
-    try {
-        const transcription = await openai.audio.transcriptions.create({
-            file: fs.createReadStream(audioFilePath),
-            model: "whisper-1",
-          });
-      conversation.messages.push({role: "assistant", content: transcription.text }); 
-      //save conversation to session
-      req.session.conversation = conversation;
-      req.session.save();   
-      return "*Esto es lo que dice el audio:*" + transcription.text;
-    } catch (error) {
-      throw new Error(error.response ? error.response.data : error.message);
+    const conversationArray = req.session.conversationArray;
+   // console.log('conversationArray:', conversationArray);
+    for (let conversation_ of conversationArray) {
+      //console.log('conversation', conversation_);
+        if(conversation_.conversationId == conversationId) {
+          // console.log(conversation_.conversation);
+           try {
+            const transcription = await openai.audio.transcriptions.create({
+                file: fs.createReadStream(audioFilePath),
+                model: "whisper-1",
+              });
+              conversation_.conversation.messages.push({role: "assistant", content: transcription.text }); 
+            //save conversation to session
+            //console.log(conversation_.conversation);
+            req.session.conversationArray = conversationArray;
+            console.log(conversationArray);
+            return "*Esto es lo que dice el audio:*" + transcription.text;
+          } catch (error) {
+            throw new Error(error.response ? error.response.data : error.message);
+          }
+        }
     }
+   
   }
   
   async function sendTextMessage(to, text) {
@@ -195,17 +215,23 @@ async function transcribeAudio(req, audioFilePath) {
   }
   
   
-  async function chatGPTProcessing(req, user_text) {
+  async function chatGPTProcessing(conversationId, req, user_text) {
     const openai = new OpenAI();
-    const conversation = req.session.conversation;
-    conversation.messages.push({role: "user", content: user_text });
-    const completion = await openai.chat.completions.create(conversation);
-    conversation.messages.push({role: "assistant", content: completion.choices[0].message.content });
-    //save conversation to session
-    req.session.conversation = conversation;
-    req.session.save();
-    return completion.choices[0];
-    //console.log(completion.choices[0]);
+    const conversationArray = req.session.conversationArray;
+    // console.log('conversationArray:', conversationArray);
+     for (let conversation_ of conversationArray) {
+       //console.log('conversation', conversation_);
+         if(conversation_.conversationId == conversationId) {
+           // console.log(conversation_.conversation);
+           conversation_conversation.messages.push({role: "user", content: user_text });
+           const completion = await openai.chat.completions.create(conversation_conversation);
+           conversation_conversation.messages.push({role: "assistant", content: completion.choices[0].message.content });
+           //save conversation to session
+           req.session.conversationArray = conversationArray;
+           return completion.choices[0];
+           //console.log(completion.choices[0]);
+         }
+      }  
   }
   
 
