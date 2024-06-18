@@ -77,14 +77,13 @@ app.post('/webhook', async (req, res) => {
                   const from = msg.from; // Número de teléfono del remitente
                   const nameFile = from.toString() +'.ogg';
                   const audioFilePath = path.join(__dirname, nameFile);
-                  const conversationId = from;
-                  
-                  // if(conversationArray.find(conversationId) != conversationId ){
+                  const conversationId = from;    
+                  if(!findSession(conversationId)){
                      conversationArray.push({conversationId: conversationId, conversation: conversation});
                      sessionData.conversationArray = conversationArray;
-                  // }
-                  console.log('CONVERSATION:',findSession(conversationId));
-                  //console.log(conversationArray);
+                  } 
+                  //console.log('CONVERSATION:',findSession(conversationId));
+                  console.log(conversationArray);
                   if (msg.type === 'audio') {
                       const audioId = msg.audio.id; // ID del mensaje de audio
                       const mimeType = msg.audio.mime_type; // Tipo MIME del audio
