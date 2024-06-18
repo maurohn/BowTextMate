@@ -158,7 +158,7 @@ async function transcribeAudio(req, audioFilePath) {
       //save conversation to session
       req.session.conversation = conversation;
       req.session.save();   
-      return transcription.text;
+      return "*Esto es lo que dice el audio:*" + transcription.text;
     } catch (error) {
       throw new Error(error.response ? error.response.data : error.message);
     }
