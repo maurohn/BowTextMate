@@ -35,7 +35,7 @@ const url_whatsapp = "https://graph.facebook.com/v19.0/";
 
 
 
-const conversationArray = [{conversationId: 0, conversation: {}}];
+const conversationArray = [{conversationId: 0, conversation: conversation}];
 
 app.get('/webhook', (req, res) => {
     const VERIFY_TOKEN = 'q1w2e3r4t5y6u7i8o9p0';
@@ -66,19 +66,19 @@ app.post('/webhook', async (req, res) => {
         req.session = sessionData;
       }
       //console.log(sessionData);
+      const conversation = {
+        messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"}],
+        model: "gpt-3.5-turbo",
+      };
       const message = req.body;
       if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
           const messages = message.entry[0].changes[0].value.messages;
           for (let msg of messages) {
-                  const conversation = {
-                    messages: [{role: "system", content: "Respomdeme como si fueras jarvis de ironman"}],
-                    model: "gpt-3.5-turbo",
-                  };
                   const from = msg.from; // Número de teléfono del remitente
                   const nameFile = from.toString() +'.ogg';
                   const audioFilePath = path.join(__dirname, nameFile);
                   const conversationId = from;
-                  const conversationArray = [{conversationId: conversationId, conversation: conversation}];
+                  conversationArray.push({conversationId: conversationId, conversation: conversation});
                   sessionData.conversationArray = conversationArray;
                   //console.log(conversationArray);
                   if (msg.type === 'audio') {
