@@ -218,6 +218,7 @@ async function transcribeAudio(conversationId, req, audioFilePath) {
            //save conversation to session
            console.log(conversation_.conversation.messages);
            req.session.conversationArray = conversationArray;
+           console.log(completion);
            return completion.choices[0];
          }
       }  
