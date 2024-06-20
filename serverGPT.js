@@ -126,7 +126,7 @@ app.post('/webhook', async (req, res) => {
         } else if (msg.text.body.split("|")[0] === '###PERSONALIZAR') {
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
-              conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] });
+              conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
               //save conversation to session
               console.log(conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
@@ -136,7 +136,7 @@ app.post('/webhook', async (req, res) => {
         } else if (msg.text.body.split("|")[0] === '###ENTRENAR') {
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
-              conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] });
+              conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
               //save conversation to session
               console.log(conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
