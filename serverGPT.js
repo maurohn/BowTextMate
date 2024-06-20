@@ -120,6 +120,14 @@ app.post('/webhook', async (req, res) => {
       } else if (msg.type === 'text') {
         const message = msg.text.body; // Texto del mensaje
         if (msg.text.body === '###REINICIAR' || msg.text.body === '###Reiniciar') {
+          for (let conversation_ of conversationArray) {
+            if (conversation_.conversationId === conversationId) {
+              conversation_.conversation = conversation;
+              //save conversation to session
+              console.log(conversation_.conversation.messages);
+              req.session.conversationArray = conversationArray;
+            }
+          }
           await chatGPTProcessing(conversationId, req, 'Cerrar Conversacion');
         } else if (msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
           await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
