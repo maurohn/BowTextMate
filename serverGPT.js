@@ -152,7 +152,7 @@ app.post('/webhook', async (req, res) => {
             }
           }
           await sendTextMessage('txt', msg.from, 'Entrenamiento completo...');
-        } else if (msg.text.body.includes('crear') && msg.text.body.includes('imagen')) {
+        } else if (msg.text.body.toLowerCase().includes('crear') && msg.text.body.toLowerCase().includes('imagen')) {
           const gptResponse = await createImageGPT(msg.text.body);
           await sendTextMessage('img', msg.from, gptResponse);
         }
