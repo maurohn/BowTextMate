@@ -124,11 +124,12 @@ app.post('/webhook', async (req, res) => {
             if (conversation_.conversationId === conversationId) {
               conversation_.conversation = conversation;
               //save conversation to session
-              console.log(conversation_.conversation.messages);
+              //console.log(conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
             }
           }
           await chatGPTProcessing(conversationId, req, 'Cerrar Conversacion');
+          await sendTextMessage(msg.from, 'Reinicio completo...');
         } else if (msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
           await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
         } else if (msg.text.body.split("|")[0] === '###PERSONALIZAR') {
@@ -140,7 +141,7 @@ app.post('/webhook', async (req, res) => {
               req.session.conversationArray = conversationArray;
             }
           }
-          //await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
+          await sendTextMessage(msg.from, 'Nueva personalidad adquirida...');
         } else if (msg.text.body.split("|")[0] === '###ENTRENAR') {
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
@@ -150,6 +151,9 @@ app.post('/webhook', async (req, res) => {
               req.session.conversationArray = conversationArray;
             }
           }
+          await sendTextMessage(msg.from, 'Entrenamiento completo...');
+        } else if (msg.text.body.split("|")[0] === '###CREAR') {
+          const gptResponse = await createImageGPT(msg.text.body.split("|")[1] || '' );
           //await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
         }
         else {
@@ -242,6 +246,19 @@ async function chatGPTProcessing(conversationId, req, user_text) {
       return completion.choices[0];
     }
   }
+}
+
+async function createImageGPT(user_text) {
+  const openai = new OpenAI();
+  const response = await openai.images.generate(
+    model = 'dall-e-3',
+    prompt = user_text,
+    size = '1792x1024',
+    quality = 'hd',
+    n = 1,);
+    console.log("Imagen: ", response.data[0]);
+  return response.data[0].url;
+
 }
 
 
