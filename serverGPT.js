@@ -142,16 +142,8 @@ app.post('/webhook', async (req, res) => {
           }
           //await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
         } else if (msg.text.body === '###RESETALL') {
-          //RESET ALL CONETXT
-          const conversationArray = [{ conversationId: 0, conversation: {} }];
-          req.session.conversationArray = conversationArray;
-          const conversation = {
-            messages: [{ role: "system", content: "Respondeme como un asistente virtual llamado Bowti, que podes brindar informacion sobre, donde esta ubicada la empresa Bowtielabs LLC: Posta de Pardo 1244, Ituzaingo, buenos aires Argentina.Hacemos impresoras 3D de gran escala y desarrollo de software, podes encontrar nuetro sitio web en https://bowtielabs.io. generalemnte estamos disponibles de 9 a 18hs, nos gusta mucho jugar al pingpong, nos apasiona armar equipos, capacitarlos y tener un buen ambiente de trabajo, nuestro mail de contacto es contacto@bowtielabs.io" }],
-            model: "gpt-3.5-turbo",
-          };
-          console.log(req.session.conversationArray);
-          const openai = new OpenAI();
-          await openai.chat.completions.create(conversation);
+          req.session.conversationArray = null;
+          req.session.destroy();
        } else if (msg.text.body.split("|")[0] === '###ENTRENAR') {
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
