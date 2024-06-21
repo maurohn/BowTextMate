@@ -152,8 +152,8 @@ app.post('/webhook', async (req, res) => {
             }
           }
           await sendTextMessage('txt', msg.from, 'Entrenamiento completo...');
-        } else if (msg.text.body.split("|")[0] === '###CREAR') {
-          const gptResponse = await createImageGPT(msg.text.body.split("|")[1] || '');
+        } else if (msg.text.body.includes('crear') && msg.text.body.includes('imagen')) {
+          const gptResponse = await createImageGPT(msg.text.body);
           await sendTextMessage('img', msg.from, gptResponse);
         }
         else {
@@ -267,7 +267,7 @@ async function createImageGPT(user_text) {
     n: 1,
     size: "1024x1024",
   });
-  //console.log("Imagen: ", response.data[0]);
+  console.log("Imagen: ", response.data[0]);
   return response.data[0].url;
 
 }
