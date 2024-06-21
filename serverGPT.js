@@ -267,7 +267,7 @@ async function createImageGPT(user_text) {
     n: 1,
     size: "1024x1024",
   });
-  console.log("Imagen: ", response.data[0]);
+  //console.log("Imagen: ", response.data[0]);
   return response.data[0].url;
 
 }
