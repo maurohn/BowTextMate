@@ -110,7 +110,7 @@ app.post('/webhook', async (req, res) => {
           // Aquí puedes agregar la lógica para procesar el archivo de audio
           const transcription = await transcribeAudio(conversationId, req, audioFilePath);
           //console.log(transcription);
-          await sendTextMessage(msg.from, transcription);
+          await sendTextMessage('txt', msg.from, transcription);
 
         } catch (error) {
           console.error('Error fetching audio:', error);
@@ -129,9 +129,9 @@ app.post('/webhook', async (req, res) => {
             }
           }
           await chatGPTProcessing(conversationId, req, 'Cerrar Conversacion');
-          await sendTextMessage(msg.from, 'Reinicio completo...');
+          await sendTextMessage('txt', msg.from, 'Reinicio completo...');
         } else if (msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
-          await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
+          await sendTextMessage('txt', msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
         } else if (msg.text.body.split("|")[0] === '###PERSONALIZAR') {
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
@@ -141,7 +141,7 @@ app.post('/webhook', async (req, res) => {
               req.session.conversationArray = conversationArray;
             }
           }
-          await sendTextMessage(msg.from, 'Nueva personalidad adquirida...');
+          await sendTextMessage('txt', msg.from, 'Nueva personalidad adquirida...');
         } else if (msg.text.body.split("|")[0] === '###ENTRENAR') {
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
@@ -151,18 +151,18 @@ app.post('/webhook', async (req, res) => {
               req.session.conversationArray = conversationArray;
             }
           }
-          await sendTextMessage(msg.from, 'Entrenamiento completo...');
+          await sendTextMessage('txt', msg.from, 'Entrenamiento completo...');
         } else if (msg.text.body.split("|")[0] === '###CREAR') {
-          const gptResponse = await createImageGPT(msg.text.body.split("|")[1] || '' );
-          //await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
+          const gptResponse = await createImageGPT(msg.text.body.split("|")[1] || '');
+          await sendTextMessage('img', msg.from, gptResponse);
         }
         else {
           const gptResponse = await chatGPTProcessing(conversationId, req, message);
-          await sendTextMessage(msg.from, gptResponse.message.content);
+          await sendTextMessage('txt', msg.from, gptResponse.message.content);
         }
       } else {
         const message = msg.text.body; // Texto del mensaje
-        await sendTextMessage(msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
+        await sendTextMessage('txt', msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
         //console.log(`Message from ${from}: ${message}`);
       }
 
@@ -200,16 +200,29 @@ async function transcribeAudio(conversationId, req, audioFilePath) {
 
 }
 
-async function sendTextMessage(to, text) {
+async function sendTextMessage(_type, to, text) {
   const url = url_whatsapp + '368320819689944/messages';
-  // Datos del mensaje que deseas enviar
-  const data = {
-    messaging_product: "whatsapp",
-    to: to,
-    text: {
-      body: text
-    }
-  };
+  if (_type === 'txt') {
+    // Datos del mensaje que deseas enviar
+    const data = {
+      messaging_product: "whatsapp",
+      to: to,
+      text: {
+        body: text
+      }
+    };
+  } else {
+    // Datos del mensaje que deseas enviar
+    const data = {
+      messaging_product: "whatsapp",
+      to: to,
+      type: "image",
+      image: {
+        link: text, /* Only if linking to your media */
+        caption: "Imagen Creada..."
+      }
+    };
+  }
 
   // Configuración del encabezado, incluyendo el token de acceso
   const config = {
@@ -255,7 +268,7 @@ async function createImageGPT(user_text) {
     prompt: user_text,
     n: 1,
     size: "1024x1024",
-    });
+  });
   console.log("Imagen: ", response.data[0]);
   return response.data[0].url;
 
