@@ -250,13 +250,13 @@ async function chatGPTProcessing(conversationId, req, user_text) {
 
 async function createImageGPT(user_text) {
   const openai = new OpenAI();
-  const response = await openai.images.generate(
-    model = 'dall-e-3',
-    prompt = user_text,
-    size = '1792x1024',
-    quality = 'hd',
-    n = 1,);
-    console.log("Imagen: ", response.data[0]);
+  const response = await openai.images.generate({
+    model: "dall-e-3",
+    prompt: user_text,
+    n: 1,
+    size: "1024x1024",
+    });
+  console.log("Imagen: ", response.data[0]);
   return response.data[0].url;
 
 }
