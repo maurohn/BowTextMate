@@ -129,7 +129,19 @@ app.post('/webhook', async (req, res) => {
             }
           }
           await chatGPTProcessing(conversationId, req, 'Cerrar Conversacion');
-        } else if (msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
+        } else if (msg.type === 'text') {
+          const message = msg.text.body; // Texto del mensaje
+            if (msg.text.body === '###RESETALL') {
+              const conversationArray = [{ conversationId: 0, conversation: {} }];
+              const conversation = {
+                messages: [{ role: "system", content: "Respondeme como un asistente virtual llamado Bowti, que podes brindar informacion sobre, donde esta ubicada la empresa: Posta de Pardo 1244, Ituzaingo, buenos aires Argentina.Hacemos impresoras 3D de gran escala y desarrollo de software, podes encontrar nuetro sitio web en http://bowtielabs.io. generalemnte estamos disponibles de 9 a 18hs, nos gusta mucho jugar al pingpong, nos apasiona armar equipos, capacitarlos y tener un buen ambiente de trabajo, nuestro mail de contacto es contacto@bowtielabs.io" }],
+                model: "gpt-3.5-turbo",
+              };
+              conversationArray.push({ conversationId: conversationId, conversation: conversation });
+              sessionData.conversationArray = conversationArray;
+              req.session = sessionData;
+            }
+          } else if (msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
           await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
         } else if (msg.text.body.split("|")[0] === '###PERSONALIZAR') {
           for (let conversation_ of conversationArray) {
