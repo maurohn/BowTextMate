@@ -229,7 +229,7 @@ async function sendTextMessage(_type, to, text) {
       'Content-Type': 'application/json'
     }
   };
-
+  
   // Hacer la solicitud POST usando Axios
   axios.post(url, data, config)
     .then(response => {
@@ -245,31 +245,40 @@ async function sendTextMessage(_type, to, text) {
 async function chatGPTProcessing(conversationId, req, user_text) {
   const openai = new OpenAI();
   const conversationArray = req.session.conversationArray;
-  //console.log('conversationArray:', conversationArray);
-  for (let conversation_ of conversationArray) {
-    if (conversation_.conversationId === conversationId) {
-      conversation_.conversation.messages.push({ role: "user", content: user_text });
-      const completion = await openai.chat.completions.create(conversation_.conversation);
-      conversation_.conversation.messages.push({ role: "assistant", content: completion.choices[0].message.content });
-      //save conversation to session
-      //console.log(conversation_.conversation.messages);
-      req.session.conversationArray = conversationArray;
-      return completion.choices[0];
+  try {
+    //console.log('conversationArray:', conversationArray);
+    for (let conversation_ of conversationArray) {
+      if (conversation_.conversationId === conversationId) {
+        conversation_.conversation.messages.push({ role: "user", content: user_text });
+        const completion = await openai.chat.completions.create(conversation_.conversation);
+        conversation_.conversation.messages.push({ role: "assistant", content: completion.choices[0].message.content });
+        //save conversation to session
+        //console.log(conversation_.conversation.messages);
+        req.session.conversationArray = conversationArray;
+        return completion.choices[0];
+      }
     }
+  } catch (error) {
+    console.error('Error fetching audio:', error);
+    return {message: {content: 'Lo siento, no puedo procesar esa solicitud.'}};
   }
 }
 
 async function createImageGPT(user_text) {
   const openai = new OpenAI();
-  const response = await openai.images.generate({
-    model: "dall-e-3",
-    prompt: user_text,
-    n: 1,
-    size: "1024x1024",
-  });
-  console.log("Imagen: ", response.data[0]);
-  return response.data[0].url;
-
+  try {
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: user_text,
+      n: 1,
+      size: "1024x1024",
+    });
+    console.log("Imagen: ", response.data[0]);
+    return response.data[0].url;
+  } catch (error) {
+    console.error('Error fetching audio:', error);
+    //return { message: { content: 'Lo siento, no puedo procesar esa solicitud.' } };
+  }
 }
 
 
