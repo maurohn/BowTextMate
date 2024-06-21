@@ -239,7 +239,7 @@ async function chatGPTProcessing(conversationId, req, user_text) {
       const completion = await openai.chat.completions.create(conversation_.conversation);
       conversation_.conversation.messages.push({ role: "assistant", content: completion.choices[0].message.content });
       //save conversation to session
-      //console.log(conversation_.conversation.messages);
+      console.log(conversation_.conversation.messages);
       req.session.conversationArray = conversationArray;
       return completion.choices[0];
     }
