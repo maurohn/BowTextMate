@@ -232,7 +232,7 @@ async function sendTextMessage(to, text) {
 async function chatGPTProcessing(conversationId, req, user_text) {
   const openai = new OpenAI();
   const conversationArray = req.session.conversationArray;
-  //console.log('conversationArray:', conversationArray);
+  console.log('conversationArray:', conversationArray);
   for (let conversation_ of conversationArray) {
     if (conversation_.conversationId === conversationId) {
       conversation_.conversation.messages.push({ role: "user", content: user_text });
