@@ -141,10 +141,7 @@ app.post('/webhook', async (req, res) => {
             }
           }
           //await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
-        } else if (msg.text.body === '###RESETALL') {
-          req.session.conversationArray = null;
-          req.session.destroy();
-       } else if (msg.text.body.split("|")[0] === '###ENTRENAR') {
+        } else if (msg.text.body.split("|")[0] === '###ENTRENAR') {
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
               conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
@@ -154,7 +151,8 @@ app.post('/webhook', async (req, res) => {
             }
           }
           //await sendTextMessage(msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
-        } else {
+        }
+        else {
           const gptResponse = await chatGPTProcessing(conversationId, req, message);
           await sendTextMessage(msg.from, gptResponse.message.content);
         }
@@ -232,14 +230,14 @@ async function sendTextMessage(to, text) {
 async function chatGPTProcessing(conversationId, req, user_text) {
   const openai = new OpenAI();
   const conversationArray = req.session.conversationArray;
-  console.log('conversationArray:', conversationArray);
+  //console.log('conversationArray:', conversationArray);
   for (let conversation_ of conversationArray) {
     if (conversation_.conversationId === conversationId) {
       conversation_.conversation.messages.push({ role: "user", content: user_text });
       const completion = await openai.chat.completions.create(conversation_.conversation);
       conversation_.conversation.messages.push({ role: "assistant", content: completion.choices[0].message.content });
       //save conversation to session
-      console.log(conversation_.conversation.messages);
+      //console.log(conversation_.conversation.messages);
       req.session.conversationArray = conversationArray;
       return completion.choices[0];
     }
