@@ -65,34 +65,6 @@ app.post('/webhook', async (req, res) => {
     messages: [{ role: "system", content: "Respondeme como un asistente virtual llamado Bowti, que podes brindar informacion sobre, donde esta ubicada la empresa Bowtielabs LLC: Posta de Pardo 1244, Ituzaingo, buenos aires Argentina.Hacemos impresoras 3D de gran escala y desarrollo de software, podes encontrar nuetro sitio web en https://bowtielabs.io. generalemnte estamos disponibles de 9 a 18hs, nos gusta mucho jugar al pingpong, nos apasiona armar equipos, capacitarlos y tener un buen ambiente de trabajo, nuestro mail de contacto es contacto@bowtielabs.io" }],
     //model: "gpt-3.5-turbo",
     model: "gpt-4o",
-    tools: [
-      {
-        "type": "function",
-        "function": {
-          "name": "get_weather",
-          "description": "Determine weather in my location",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "location": {
-                "type": "string",
-                "description": "The city and state e.g. San Francisco, CA"
-              },
-              "unit": {
-                "type": "string",
-                "enum": [
-                  "c",
-                  "f"
-                ]
-              }
-            },
-            "required": [
-              "location"
-            ]
-          }
-        }
-      }
-    ],
   };
   const message = req.body;
   if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
@@ -202,12 +174,7 @@ app.post('/webhook', async (req, res) => {
 });
 
 function findSession(conversationId) {
-  return conversationArray.find((conversation) => conversation.conversationId === conversationId);
-}
-
-function get_weather(jsonobj) {
-  console.log('Voy a oedir ek tiempo', jsonobj);
-  return '';
+  return conversationArray.find((conversation) => conversation.conversationId === conversationId)
 }
 
 // Función para transcribir el archivo de audio utilizando OpenAI
