@@ -174,7 +174,7 @@ app.post('/webhook', async (req, res) => {
 });
 
 function findSession(conversationId) {
-  return conversationArray.find((conversation) => conversation.conversationId === conversationId)
+  return conversationArray.find((conversation) => conversation.conversationId === conv
 }
 
 // Función para transcribir el archivo de audio utilizando OpenAI
@@ -274,7 +274,7 @@ async function createImageGPT(user_text) {
       n: 1,
       size: "1024x1024",
     });
-    console.log("Imagen: ", response.data[0]);
+    //console.log("Imagen: ", response.data[0]);
     return response.data[0].url;
   } catch (error) {
     console.error('Error fetching audio:', error);
