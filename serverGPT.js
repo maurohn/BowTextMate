@@ -63,7 +63,8 @@ app.post('/webhook', async (req, res) => {
   //console.log(sessionData);
   const conversation = {
     messages: [{ role: "system", content: "Respondeme como un asistente virtual llamado Bowti, que podes brindar informacion sobre, donde esta ubicada la empresa Bowtielabs LLC: Posta de Pardo 1244, Ituzaingo, buenos aires Argentina.Hacemos impresoras 3D de gran escala y desarrollo de software, podes encontrar nuetro sitio web en https://bowtielabs.io. generalemnte estamos disponibles de 9 a 18hs, nos gusta mucho jugar al pingpong, nos apasiona armar equipos, capacitarlos y tener un buen ambiente de trabajo, nuestro mail de contacto es contacto@bowtielabs.io" }],
-    model: "gpt-3.5-turbo",
+    //model: "gpt-3.5-turbo",
+    model: "gpt-4o",
   };
   const message = req.body;
   if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
