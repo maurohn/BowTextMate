@@ -41,7 +41,7 @@ app.get('/webhook', (req, res) => {
 
   if (mode && token) {
     if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-      console.log('WEBHOOK_VERIFIED');
+      //console.log('WEBHOOK_VERIFIED');
       res.status(200).send(challenge);
     } else {
       res.sendStatus(403);
@@ -148,7 +148,7 @@ app.post('/webhook', async (req, res) => {
             if (conversation_.conversationId === conversationId) {
               conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
               //save conversation to session
-              console.log(conversation_.conversation.messages);
+              //console.log(conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
             }
           }
@@ -162,7 +162,7 @@ app.post('/webhook', async (req, res) => {
           await sendTextMessage('txt', msg.from, gptResponse.message.content);
         }
       } else {
-        const message = msg.text.body; // Texto del mensaje
+        //const message = msg.text.body; // Texto del mensaje
         await sendTextMessage('txt', msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
         //console.log(`Message from ${from}: ${message}`);
       }
