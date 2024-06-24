@@ -174,7 +174,7 @@ app.post('/webhook', async (req, res) => {
 });
 
 function findSession(conversationId) {
-  return conversationArray.find((conversation) => conversation.conversationId === conv
+  return conversationArray.find((conversation) => conversation.conversationId === conversationId);
 }
 
 // Función para transcribir el archivo de audio utilizando OpenAI
