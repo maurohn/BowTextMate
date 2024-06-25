@@ -249,6 +249,7 @@ async function sendTextMessage(_type, to, text) {
 async function chatGPTProcessing(conversationId, req, user_text) {
   const openai = new OpenAI();
   const conversationArray = req.session.conversationArray;
+  console.log("LN-252-Proceso mensaje conversationArray:", conversationArray);
   try {
     //console.log('conversationArray:', conversationArray);
     for (let conversation_ of conversationArray) {
@@ -257,7 +258,8 @@ async function chatGPTProcessing(conversationId, req, user_text) {
         const completion = await openai.chat.completions.create(conversation_.conversation);
         conversation_.conversation.messages.push({ role: "assistant", content: completion.choices[0].message.content });
         //save conversation to session
-        //console.log(conversation_.conversation.messages);
+        console.log("LN-261-Proceso mensaje conversationId:", conversationId);
+        console.log("LN-262-Proceso mensaje:", conversation_.conversation.messages);
         req.session.conversationArray = conversationArray;
         return completion.choices[0];
       }
