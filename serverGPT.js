@@ -53,8 +53,6 @@ app.get('/webhook', (req, res) => {
 app.post('/webhook', async (req, res) => {
   var message = req.body;
   if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
-    //console.log("BODY:",message);
-    console.log(JSON.stringify(message));
     //Si la session no existe la guardo
     var sessionData = req.session;
     if (!sessionData) {
@@ -253,7 +251,7 @@ async function sendTextMessage(_type, to, text) {
 async function chatGPTProcessing(conversationId, req, user_text) {
   const openai = new OpenAI();
   const conversationArray = req.session.conversationArray;
-  console.log("LN-252-Proceso mensaje conversationArray:", conversationArray);
+  console.log("LN-254-Proceso mensaje conversationArray:",JSON.stringify(conversationArray));
   try {
     //console.log('conversationArray:', conversationArray);
     for (let conversation_ of conversationArray) {
@@ -262,8 +260,6 @@ async function chatGPTProcessing(conversationId, req, user_text) {
         const completion = await openai.chat.completions.create(conversation_.conversation);
         conversation_.conversation.messages.push({ role: "assistant", content: completion.choices[0].message.content });
         //save conversation to session
-        //console.log("LN-261-Proceso mensaje conversationId:", conversationId);
-        //console.log("LN-262-Proceso mensaje:", conversation_.conversation.messages);
         req.session.conversationArray = conversationArray;
         return completion.choices[0];
       }
@@ -280,10 +276,11 @@ async function createImageGPT(user_text) {
     const response = await openai.images.generate({
       model: "dall-e-3",
       prompt: user_text,
+      quality: "hd",
       n: 1,
-      size: "1024x1024",
+      size: "1792x1024",
     });
-    //console.log("Imagen: ", response.data[0]);
+    console.log("Imagen: ", response.data[0]);
     return response.data[0].url;
   } catch (error) {
     console.error('Error fetching audio:', error);
