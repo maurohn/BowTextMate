@@ -56,9 +56,9 @@ app.post('/webhook', async (req, res) => {
   if (!sessionData) {
     sessionData.conversationArray = conversationArray;
     req.session = sessionData;
-    console.log("Sesion no existe, la creo:", sessionData);
+    //console.log("Sesion no existe, la creo:", sessionData);
   } else {
-    console.log("Sesion ya existe:", sessionData);
+    //console.log("Sesion ya existe:", sessionData);
     sessionData.conversationArray = conversationArray;
     req.session = sessionData;
   }
@@ -69,7 +69,8 @@ app.post('/webhook', async (req, res) => {
     model: "gpt-4o",
   };
   var message = req.body;
-  console.log("BODY:",message);
+  //console.log("BODY:",message);
+  console.log(JSON.stringify(message));
   if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
     const messages = message.entry[0].changes[0].value.messages;
     for (let msg of messages) {
@@ -128,7 +129,7 @@ app.post('/webhook', async (req, res) => {
             if (conversation_.conversationId === conversationId) {
               conversation_.conversation = conversation;
               //save conversation to session
-              console.log("LN-128-ENTRO EN REINICIAR:", conversation_.conversation.messages);
+              //console.log("LN-128-ENTRO EN REINICIAR:", conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
             }
           }
@@ -141,7 +142,7 @@ app.post('/webhook', async (req, res) => {
             if (conversation_.conversationId === conversationId) {
               conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
               //save conversation to session
-              console.log("LN-141-Entro a personalizar:", conversation_.conversation.messages);
+              //console.log("LN-141-Entro a personalizar:", conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
             }
           }
@@ -151,8 +152,8 @@ app.post('/webhook', async (req, res) => {
             if (conversation_.conversationId === conversationId) {
               conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
               //save conversation to session
-              console.log("LN-151-ENTRO A ENTRENAR conversationId:", conversationId);
-              console.log("LN-152-ENTRO A ENTRENAR mensajes:", conversation_.conversation.messages);
+              //console.log("LN-151-ENTRO A ENTRENAR conversationId:", conversationId);
+              //console.log("LN-152-ENTRO A ENTRENAR mensajes:", conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
             }
           }
@@ -163,8 +164,8 @@ app.post('/webhook', async (req, res) => {
         }
         else {
           const gptResponse = await chatGPTProcessing(conversationId, req, msg.text.body);
-          console.log("LN-163-Entro en el Esle de Mesaje conversationId:", conversationId);
-          console.log("LN-164-Entro en el Esle de Mesaje: ", msg.text.body);
+          //console.log("LN-163-Entro en el Esle de Mesaje conversationId:", conversationId);
+          //console.log("LN-164-Entro en el Esle de Mesaje: ", msg.text.body);
           await sendTextMessage('txt', msg.from, gptResponse.message.content);
         }
       } else {
@@ -261,8 +262,8 @@ async function chatGPTProcessing(conversationId, req, user_text) {
         const completion = await openai.chat.completions.create(conversation_.conversation);
         conversation_.conversation.messages.push({ role: "assistant", content: completion.choices[0].message.content });
         //save conversation to session
-        console.log("LN-261-Proceso mensaje conversationId:", conversationId);
-        console.log("LN-262-Proceso mensaje:", conversation_.conversation.messages);
+        //console.log("LN-261-Proceso mensaje conversationId:", conversationId);
+        //console.log("LN-262-Proceso mensaje:", conversation_.conversation.messages);
         req.session.conversationArray = conversationArray;
         return completion.choices[0];
       }
