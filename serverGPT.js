@@ -119,13 +119,13 @@ app.post('/webhook', async (req, res) => {
           res.sendStatus(404);
         }
       } else if (msg.type === 'text') {
-        const message = msg.text.body; // Texto del mensaje
+        //const message = msg.text.body; // Texto del mensaje
         if (msg.text.body === '###REINICIAR' || msg.text.body === '###Reiniciar') {
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
               conversation_.conversation = conversation;
               //save conversation to session
-              //console.log(conversation_.conversation.messages);
+              console.log("LN-128-ENTRO EN REINICIAR:", conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
             }
           }
@@ -138,7 +138,7 @@ app.post('/webhook', async (req, res) => {
             if (conversation_.conversationId === conversationId) {
               conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
               //save conversation to session
-              console.log(conversation_.conversation.messages);
+              console.log("LN-141-Entro a personalizar:", conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
             }
           }
@@ -148,7 +148,8 @@ app.post('/webhook', async (req, res) => {
             if (conversation_.conversationId === conversationId) {
               conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
               //save conversation to session
-              //console.log(conversation_.conversation.messages);
+              console.log("LN-151-ENTRO A ENTRENAR conversationId:", conversationId);
+              console.log("LN-152-ENTRO A ENTRENAR mensajes:", conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
             }
           }
@@ -158,7 +159,9 @@ app.post('/webhook', async (req, res) => {
           await sendTextMessage('img', msg.from, gptResponse);
         }
         else {
-          const gptResponse = await chatGPTProcessing(conversationId, req, message);
+          const gptResponse = await chatGPTProcessing(conversationId, req, msg.text.body);
+          console.log("LN-163-Entro en el Esle de Mesaje conversationId:", conversationId);
+          console.log("LN-164-Entro en el Esle de Mesaje: ", msg.text.body);
           await sendTextMessage('txt', msg.from, gptResponse.message.content);
         }
       } else {
