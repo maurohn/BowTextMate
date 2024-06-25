@@ -58,7 +58,7 @@ app.post('/webhook', async (req, res) => {
     req.session = sessionData;
     console.log("Sesion no existe, la creo:", sessionData);
   } else {
-    console.log("Sesion ya existe:", essionData);
+    console.log("Sesion ya existe:", sessionData);
     sessionData.conversationArray = conversationArray;
     req.session = sessionData;
   }
