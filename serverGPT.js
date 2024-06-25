@@ -18,7 +18,7 @@ app.use(session({
   secret: "q1w2e3r4t5y6u7i8o9p0",
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 120000 } // session timeout of 120 seconds
+  cookie: { maxAge: 60000 } // session timeout of 120 seconds
 }));
 
 
@@ -52,11 +52,13 @@ app.get('/webhook', (req, res) => {
 
 app.post('/webhook', async (req, res) => {
   //Si la session no existe la guardo
-  const sessionData = req.session;
+  var sessionData = req.session;
   if (!sessionData) {
     sessionData.conversationArray = conversationArray;
     req.session = sessionData;
+    console.log("Sesion no existe, la creo:", sessionData);
   } else {
+    console.log("Sesion ya existe:", essionData);
     sessionData.conversationArray = conversationArray;
     req.session = sessionData;
   }
