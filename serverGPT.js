@@ -51,27 +51,27 @@ app.get('/webhook', (req, res) => {
 
 
 app.post('/webhook', async (req, res) => {
-  //Si la session no existe la guardo
-  var sessionData = req.session;
-  if (!sessionData) {
-    sessionData.conversationArray = conversationArray;
-    req.session = sessionData;
-    //console.log("Sesion no existe, la creo:", sessionData);
-  } else {
-    //console.log("Sesion ya existe:", sessionData);
-    sessionData.conversationArray = conversationArray;
-    req.session = sessionData;
-  }
-  //console.log(sessionData);
-  const conversation = {
-    messages: [{ role: "system", content: "Respondeme como un asistente virtual llamado Bowti, que podes brindar informacion sobre, donde esta ubicada la empresa Bowtielabs LLC: Posta de Pardo 1244, Ituzaingo, buenos aires Argentina.Hacemos impresoras 3D de gran escala y desarrollo de software, podes encontrar nuetro sitio web en https://bowtielabs.io. generalemnte estamos disponibles de 9 a 18hs, nos gusta mucho jugar al pingpong, nos apasiona armar equipos, capacitarlos y tener un buen ambiente de trabajo, nuestro mail de contacto es contacto@bowtielabs.io" }],
-    //model: "gpt-3.5-turbo",
-    model: "gpt-4o",
-  };
   var message = req.body;
-  //console.log("BODY:",message);
-  console.log(JSON.stringify(message));
   if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
+    //console.log("BODY:",message);
+    console.log(JSON.stringify(message));
+    //Si la session no existe la guardo
+    var sessionData = req.session;
+    if (!sessionData) {
+      sessionData.conversationArray = conversationArray;
+      req.session = sessionData;
+      //console.log("Sesion no existe, la creo:", sessionData);
+    } else {
+      //console.log("Sesion ya existe:", sessionData);
+      sessionData.conversationArray = conversationArray;
+      req.session = sessionData;
+    }
+    //console.log(sessionData);
+    const conversation = {
+      messages: [{ role: "system", content: "Respondeme como un asistente virtual llamado Bowti, que podes brindar informacion sobre, donde esta ubicada la empresa Bowtielabs LLC: Posta de Pardo 1244, Ituzaingo, buenos aires Argentina.Hacemos impresoras 3D de gran escala y desarrollo de software, podes encontrar nuetro sitio web en https://bowtielabs.io. generalemnte estamos disponibles de 9 a 18hs, nos gusta mucho jugar al pingpong, nos apasiona armar equipos, capacitarlos y tener un buen ambiente de trabajo, nuestro mail de contacto es contacto@bowtielabs.io" }],
+      //model: "gpt-3.5-turbo",
+      model: "gpt-4o",
+    };
     const messages = message.entry[0].changes[0].value.messages;
     for (let msg of messages) {
       const from = msg.from; // Número de teléfono del remitente
@@ -219,7 +219,7 @@ async function sendTextMessage(_type, to, text) {
   };
   if (_type === 'img') {
     // Datos del mensaje que deseas enviar
-      data = {
+    data = {
       messaging_product: "whatsapp",
       to: to,
       type: "image",
@@ -237,7 +237,7 @@ async function sendTextMessage(_type, to, text) {
       'Content-Type': 'application/json'
     }
   };
-  
+
   // Hacer la solicitud POST usando Axios
   axios.post(url, data, config)
     .then(response => {
@@ -270,7 +270,7 @@ async function chatGPTProcessing(conversationId, req, user_text) {
     }
   } catch (error) {
     console.error('Error fetching audio:', error);
-    return {message: {content: 'Lo siento, no puedo procesar esa solicitud.'}};
+    return { message: { content: 'Lo siento, no puedo procesar esa solicitud.' } };
   }
 }
 
