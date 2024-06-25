@@ -68,7 +68,8 @@ app.post('/webhook', async (req, res) => {
     //model: "gpt-3.5-turbo",
     model: "gpt-4o",
   };
-  const message = req.body;
+  var message = req.body;
+  console.log("BODY:",message);
   if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
     const messages = message.entry[0].changes[0].value.messages;
     for (let msg of messages) {
