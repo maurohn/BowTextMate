@@ -168,8 +168,9 @@ app.post('/webhook', async (req, res) => {
         }
       } else {
         //const message = msg.text.body; // Texto del mensaje
-        await sendTextMessage('txt', msg.from, "Este es un servicio de Transcripcion de Audios desarrollado por Bowtielabs LLC, en breve estaremos integrando IA y muchas funciones mas!!");
+        await sendTextMessage('txt', msg.from, "Este es un servicio de transcripcion de audios desarrollado por Bowtielabs LLC, ademas podes pedirle crear imagenes y cualquier cosa que necesites el asistente tratara de solucionarlo :) !!");
         //console.log(`Message from ${from}: ${message}`);
+        console.log("IMAGEN:",JSON.stringify(messages));
       }
 
       // Responder con un 200 para confirmar la recepción del mensaje
