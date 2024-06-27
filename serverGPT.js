@@ -160,17 +160,19 @@ app.post('/webhook', async (req, res) => {
           const gptResponse = await createImageGPT(msg.text.body);
           await sendTextMessage('img', msg.from, gptResponse);
         }
-        else {
+        else { 
           const gptResponse = await chatGPTProcessing(conversationId, req, msg.text.body);
           //console.log("LN-163-Entro en el Esle de Mesaje conversationId:", conversationId);
           //console.log("LN-164-Entro en el Esle de Mesaje: ", msg.text.body);
           await sendTextMessage('txt', msg.from, gptResponse.message.content);
         }
+      } else if (msg.type === 'image/jpeg') {
+        await sendTextMessage('txt', msg.from, "Por el momento no podemos procesar imagenes, pero en breve si :) !!");
+        console.log("IMAGEN:",JSON.stringify(messages));
       } else {
         //const message = msg.text.body; // Texto del mensaje
         await sendTextMessage('txt', msg.from, "Este es un servicio de transcripcion de audios desarrollado por Bowtielabs LLC, ademas podes pedirle crear imagenes y cualquier cosa que necesites el asistente tratara de solucionarlo :) !!");
         //console.log(`Message from ${from}: ${message}`);
-        console.log("IMAGEN:",JSON.stringify(messages));
       }
 
       // Responder con un 200 para confirmar la recepción del mensaje
