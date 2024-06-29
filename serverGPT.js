@@ -320,69 +320,33 @@ async function createImageGPT(user_text) {
 async function analyzeImage(imagePath) {
   const imageData = fs.readFileSync(imagePath);
   const base64Image = imageData.toString('base64');
-  console.log('baseOImage',base64Image);
+  //console.log('baseOImage',base64Image);
   const openai = new OpenAI();
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4o',
-    messages: [
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'text',
-            text: 'What’s in this image?'
-          },
-          {
-            type: 'image_url',
-            image_url: {
-              url: `data:image/jpeg;base64,${base64Image}`
-            }
-          }
-        ]
-      }
-    ]
-  });
-
-  return response.choices[0];  
-}
-
-
-async function imageProcessGPT(conversationId, req, image_url) {
-  const openai = new OpenAI();
-  const conversationArray = req.session.conversationArray;
-  console.log("Procesa el mensaje: ", JSON.stringify(conversationArray));
   try {
-    //console.log('conversationArray:', conversationArray);
-    for (let conversation_ of conversationArray) {
-      if (conversation_.conversationId === conversationId) {
-        //conversation_.conversation.messages.push({ role: "user",  type: "text", text: "Que hay en esta imagen?" },{type: "image_url", image_url: {"url": image_url,}});
-        //const completion = await openai.chat.completions.create(conversation_.conversation);
-        //conversation_.conversation.messages.push({ role: "assistant", content: completion.choices[0].message.content });
-        //save conversation to session
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4o",
-          messages: [
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'user',
+          content: [
             {
-              role: "user",
-              content: [
-                { type: "text", text: "Que hay en esta imagen?" },
-                {
-                  type: "image_url",
-                  image_url: {
-                    "url": image_url,
-                  },
-                },
-              ],
+              type: 'text',
+              text: 'Que hay en la imagen?, si encuentras texto extraelo y clasificalo, lo mismo con los numeros.'
             },
-          ],
-        });
-        //req.session.conversationArray = conversationArray;
-        return completion.choices[0];
-      }
-    }
+            {
+              type: 'image_url',
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Image}`
+              }
+            }
+          ]
+        }
+      ]
+    });
+    return response.choices[0];
   } catch (error) {
     console.error('Error fetching image:', error);
-    //return { message: { content: 'Lo siento, no puedo procesar esa solicitud.' } };
+    return { message: { content: 'Lo siento, no puedo procesar esa solicitud.' } };
   }
 }
 
