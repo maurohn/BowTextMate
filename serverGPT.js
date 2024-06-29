@@ -168,7 +168,7 @@ app.post('/webhook', async (req, res) => {
           //console.log("LN-164-Entro en el Esle de Mesaje: ", msg.text.body);
           await sendTextMessage('txt', msg.from, gptResponse.message.content);
         }
-      } else if (msg.type === 'image/jpeg') {
+      } else if (msg.type === 'image') {
         await sendTextMessage('txt', msg.from, "Por el momento no podemos procesar imagenes, pero en breve si :) !!");
         console.log("IMAGEN:",JSON.stringify(messages));
       } else {
