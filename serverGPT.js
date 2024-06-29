@@ -181,7 +181,7 @@ app.post('/webhook', async (req, res) => {
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
             }
           });
-          console.log("Objeto Imagen:", url_imagen);
+          console.log("Objeto Imagen:", url_imagen.data.url);
           await sendTextMessage('txt', msg.from, "Por el momento no podemos procesar imagenes, pero en breve si :) !!");
         } catch (error) {
           console.error('Error fetching audio:', error);
