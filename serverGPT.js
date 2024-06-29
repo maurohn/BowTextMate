@@ -53,8 +53,8 @@ app.get('/webhook', (req, res) => {
 
 app.post('/webhook', async (req, res) => {
   var message = req.body;
-  console.log("ENTRA UN REQ:",JSON.stringify(message));
   if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
+    console.log("ENTRA UN REQ:", JSON.stringify(message));
     //Si la session no existe la guardo
     var sessionData = req.session;
     if (!sessionData) {
@@ -162,15 +162,31 @@ app.post('/webhook', async (req, res) => {
           const gptResponse = await createImageGPT(msg.text.body);
           await sendTextMessage('img', msg.from, gptResponse);
         }
-        else { 
+        else {
           const gptResponse = await chatGPTProcessing(conversationId, req, msg.text.body);
           //console.log("LN-163-Entro en el Esle de Mesaje conversationId:", conversationId);
           //console.log("LN-164-Entro en el Esle de Mesaje: ", msg.text.body);
           await sendTextMessage('txt', msg.from, gptResponse.message.content);
         }
       } else if (msg.type === 'image') {
-        await sendTextMessage('txt', msg.from, "Por el momento no podemos procesar imagenes, pero en breve si :) !!");
-        console.log("IMAGEN:",JSON.stringify(messages));
+        console.log("IMAGEN:", JSON.stringify(messages));
+        const url = url_whatsapp + msg.image.id;
+        try {
+          //Llamo al primer metodo para obtener la url de la imagen.
+          const url_imagen = await axios.get(url, {
+            headers: {
+              'Authorization': `Bearer ${token_whatsapp}`,
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+            }
+          });
+          console.log("Objeto Imagen:", JSON.stringify(url_imagen));
+          await sendTextMessage('txt', msg.from, "Por el momento no podemos procesar imagenes, pero en breve si :) !!");
+        } catch (error) {
+          console.error('Error fetching audio:', error);
+          req.session.destroy();
+          res.sendStatus(404);
+        }
       } else {
         //const message = msg.text.body; // Texto del mensaje
         await sendTextMessage('txt', msg.from, "Este es un servicio de transcripcion de audios desarrollado por Bowtielabs LLC, ademas podes pedirle crear imagenes y cualquier cosa que necesites el asistente tratara de solucionarlo :) !!");
@@ -256,7 +272,7 @@ async function sendTextMessage(_type, to, text) {
 async function chatGPTProcessing(conversationId, req, user_text) {
   const openai = new OpenAI();
   const conversationArray = req.session.conversationArray;
-  console.log("Procesa el mensaje: ",JSON.stringify(conversationArray));
+  console.log("Procesa el mensaje: ", JSON.stringify(conversationArray));
   try {
     //console.log('conversationArray:', conversationArray);
     for (let conversation_ of conversationArray) {
