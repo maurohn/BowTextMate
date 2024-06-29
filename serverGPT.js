@@ -327,11 +327,6 @@ async function imageProcessGPT(conversationId, req, image_url) {
         //save conversation to session
         const completion = await openai.chat.completions.create({
           model: "gpt-4o",
-          headers: {
-            'Authorization': `Bearer ${token_whatsapp}`,
-              "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
-          },
           messages: [
             {
               role: "user",
@@ -345,7 +340,11 @@ async function imageProcessGPT(conversationId, req, image_url) {
                 },
               ],
             },
-          ],
+          ], headers: {
+            'Authorization': `Bearer ${token_whatsapp}`,
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+          },
         });
         //req.session.conversationArray = conversationArray;
         return completion.choices[0];
