@@ -169,9 +169,9 @@ app.post('/webhook', async (req, res) => {
           await sendTextMessage('txt', msg.from, gptResponse.message.content);
         }
       } else if (msg.type === 'image') {
-        console.log("IMAGEN:", JSON.stringify(messages));
+        //console.log("IMAGEN:", JSON.stringify(messages));
         const url = url_whatsapp + msg.image.id;
-        console.log("url:", url);
+        //console.log("url:", url);
         try {
           //Llamo al primer metodo para obtener la url de la imagen.
           const media = await axios.get(url, {
@@ -181,13 +181,13 @@ app.post('/webhook', async (req, res) => {
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
             }
           });
-          console.log("Objeto Imagen:", media.data.url);
+          //console.log("Objeto Imagen:", media.data.url);
           const imagen_path = await downloadImage(media);
           //const gptResponse = await imageProcessGPT(conversationId, req, url_imagen.data.url);
           console.log("Imagen:", imagen_path);
-          const getResponse = await analyzeImage(imagen_path);
-          console.log("Response:", JSON.stringify(getResponse));
-          //await sendTextMessage('txt', msg.from, gptResponse.message.content);
+          const gptResponse = await analyzeImage(imagen_path);
+          //console.log("Response:", JSON.stringify(getResponse));
+          await sendTextMessage('txt', msg.from, gptResponse.message.content);
         } catch (error) {
           await sendTextMessage('txt', msg.from, "Por el momento no podemos procesar imagenes, pero en breve si :) !!");
           console.error('Error fetching audio:', error);
