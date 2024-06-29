@@ -182,7 +182,7 @@ app.post('/webhook', async (req, res) => {
             }
           });
           console.log("Objeto Imagen:", url_imagen.data.url);
-          const gptResponse = await imageProcessGPT(conversationId, req, msg.text.body);
+          const gptResponse = await imageProcessGPT(conversationId, req, url_imagen.data.url);
           await sendTextMessage('txt', msg.from, gptResponse.message.content);
         } catch (error) {
           await sendTextMessage('txt', msg.from, "Por el momento no podemos procesar imagenes, pero en breve si :) !!");
@@ -289,7 +289,7 @@ async function chatGPTProcessing(conversationId, req, user_text) {
       }
     }
   } catch (error) {
-    console.error('Error fetching audio:', error);
+    console.error('Error fetching image:', error);
     return { message: { content: 'Lo siento, no puedo procesar esa solicitud.' } };
   }
 }
