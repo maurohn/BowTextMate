@@ -7,6 +7,7 @@ const axios = require('axios');
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 require('log-timestamp');
+const base64Img = require('base64-img');
 
 const app = express();
 app.use(bodyParser.json());
@@ -318,20 +319,28 @@ async function createImageGPT(user_text) {
 
 // Función para analizar la imagen utilizando la API de OpenAI
 async function analyzeImage(imagePath) {
-  const imageData = fs.readFileSync(imagePath);
+  //const imageData = fs.readFileSync(imagePath);
+  const base64Image = base64Img.base64Sync(imagePath);
   const openai = new OpenAI();
   const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
+    model: 'gpt-4o',
+    messages: [
+      {
+        role: 'user',
+        content: [
           {
-              role: "system",
-              content: "Describe the content of the image."
+            type: 'text',
+            text: 'What’s in this image?'
           },
           {
-              role: "user",
-              content: imageData
+            type: 'image_url',
+            image_url: {
+              url: `data:image/jpeg;base64,${base64Image}`
+            }
           }
-      ]
+        ]
+      }
+    ]
   });
 
   return response.data.choices[0].message.content;
