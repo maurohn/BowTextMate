@@ -182,8 +182,10 @@ app.post('/webhook', async (req, res) => {
             }
           });
           console.log("Objeto Imagen:", url_imagen.data.url);
-          await sendTextMessage('txt', msg.from, "Por el momento no podemos procesar imagenes, pero en breve si :) !!");
+          const gptResponse = await imageProcessGPT(conversationId, req, msg.text.body);
+          await sendTextMessage('txt', msg.from, gptResponse.message.content);
         } catch (error) {
+          await sendTextMessage('txt', msg.from, "Por el momento no podemos procesar imagenes, pero en breve si :) !!");
           console.error('Error fetching audio:', error);
           req.session.destroy();
           res.sendStatus(404);
@@ -304,6 +306,28 @@ async function createImageGPT(user_text) {
     });
     console.log("Imagen: ", response.data[0]);
     return response.data[0].url;
+  } catch (error) {
+    console.error('Error fetching audio:', error);
+    //return { message: { content: 'Lo siento, no puedo procesar esa solicitud.' } };
+  }
+}
+
+async function imageProcessGPT(conversationId, req, image_url) {
+  const openai = new OpenAI();
+  const conversationArray = req.session.conversationArray;
+  console.log("Procesa el mensaje: ", JSON.stringify(conversationArray));
+  try {
+    //console.log('conversationArray:', conversationArray);
+    for (let conversation_ of conversationArray) {
+      if (conversation_.conversationId === conversationId) {
+        conversation_.conversation.messages.push({ role: "user",  type: "text", text: "Que hay en esta imagen?" },{type: "image_url", image_url: {"url": image_url,}});
+        const completion = await openai.chat.completions.create(conversation_.conversation);
+        conversation_.conversation.messages.push({ role: "assistant", content: completion.choices[0].message.content });
+        //save conversation to session
+        req.session.conversationArray = conversationArray;
+        return completion.choices[0];
+      }
+    }
   } catch (error) {
     console.error('Error fetching audio:', error);
     //return { message: { content: 'Lo siento, no puedo procesar esa solicitud.' } };
