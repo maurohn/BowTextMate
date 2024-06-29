@@ -171,6 +171,7 @@ app.post('/webhook', async (req, res) => {
       } else if (msg.type === 'image') {
         console.log("IMAGEN:", JSON.stringify(messages));
         const url = url_whatsapp + msg.image.id;
+        console.log("url:", url);
         try {
           //Llamo al primer metodo para obtener la url de la imagen.
           const url_imagen = await axios.get(url, {
@@ -180,7 +181,7 @@ app.post('/webhook', async (req, res) => {
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
             }
           });
-          console.log("Objeto Imagen:", JSON.stringify(url_imagen));
+          console.log("Objeto Imagen:", url_imagen);
           await sendTextMessage('txt', msg.from, "Por el momento no podemos procesar imagenes, pero en breve si :) !!");
         } catch (error) {
           console.error('Error fetching audio:', error);
