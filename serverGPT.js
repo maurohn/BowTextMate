@@ -321,11 +321,28 @@ async function imageProcessGPT(conversationId, req, image_url) {
     //console.log('conversationArray:', conversationArray);
     for (let conversation_ of conversationArray) {
       if (conversation_.conversationId === conversationId) {
-        conversation_.conversation.messages.push({ role: "user",  type: "text", text: "Que hay en esta imagen?" },{type: "image_url", image_url: {"url": image_url,}});
-        const completion = await openai.chat.completions.create(conversation_.conversation);
-        conversation_.conversation.messages.push({ role: "assistant", content: completion.choices[0].message.content });
+        //conversation_.conversation.messages.push({ role: "user",  type: "text", text: "Que hay en esta imagen?" },{type: "image_url", image_url: {"url": image_url,}});
+        //const completion = await openai.chat.completions.create(conversation_.conversation);
+        //conversation_.conversation.messages.push({ role: "assistant", content: completion.choices[0].message.content });
         //save conversation to session
-        req.session.conversationArray = conversationArray;
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "user",
+              content: [
+                { type: "text", text: "Que hay en esta imagen?" },
+                {
+                  type: "image_url",
+                  image_url: {
+                    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg",
+                  },
+                },
+              ],
+            },
+          ],
+        });
+        //req.session.conversationArray = conversationArray;
         return completion.choices[0];
       }
     }
