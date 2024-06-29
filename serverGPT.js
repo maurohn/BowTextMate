@@ -321,7 +321,7 @@ async function analyzeImage(imagePath) {
   const imageData = fs.readFileSync(imagePath);
   const openai = new OpenAI();
   const response = await openai.chat.completions.create({
-      model: "gpt-4-vision",
+      model: "gpt-4o",
       messages: [
           {
               role: "system",
