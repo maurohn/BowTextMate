@@ -320,7 +320,7 @@ async function createImageGPT(user_text) {
 async function analyzeImage(imagePath) {
   const imageData = fs.readFileSync(imagePath);
   const openai = new OpenAI();
-  const response = await openai.createChatCompletion({
+  const response = await openai.chat.completions.create({
       model: "gpt-4-vision",
       messages: [
           {
