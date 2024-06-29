@@ -318,38 +318,32 @@ async function imageProcessGPT(conversationId, req, image_url) {
   const conversationArray = req.session.conversationArray;
   console.log("Procesa el mensaje: ", JSON.stringify(conversationArray));
   try {
-    //console.log('conversationArray:', conversationArray);
-    for (let conversation_ of conversationArray) {
-      if (conversation_.conversationId === conversationId) {
-        //conversation_.conversation.messages.push({ role: "user",  type: "text", text: "Que hay en esta imagen?" },{type: "image_url", image_url: {"url": image_url,}});
-        //const completion = await openai.chat.completions.create(conversation_.conversation);
-        //conversation_.conversation.messages.push({ role: "assistant", content: completion.choices[0].message.content });
-        //save conversation to session
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4o",
-          messages: [
-            {
-              role: "user",
-              content: [
-                { type: "text", text: "Que hay en esta imagen?" },
-                {
-                  type: "image_url",
-                  image_url: {
-                    "url": image_url,
-                  },
-                },
-              ],
-            },
-          ], headers: {
-            'Authorization': `Bearer ${token_whatsapp}`,
-              "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+    const response = await axios({
+      method: 'post',
+      url: 'https://api.openai.com/v1/chat/completions',
+      headers: {
+        'Authorization': `Bearer ${token_whatsapp}`, // Reemplaza token_whatsapp con tu clave de API
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+      },
+      data: {
+        model: 'gpt-4o', // Reemplaza con el modelo que deseas usar
+        messages: [
+          {
+            role: 'user',
+            content: 'Que hay en esta imagen?',
           },
-        });
-        //req.session.conversationArray = conversationArray;
-        return completion.choices[0];
-      }
-    }
+          {
+            role: 'user',
+            content: {
+              type: 'image_url',
+              image_url: image_url,
+            },
+          },
+        ],
+      },
+    });
+    return response.data.choices[0];
   } catch (error) {
     console.error('Error fetching image:', error);
     //return { message: { content: 'Lo siento, no puedo procesar esa solicitud.' } };
