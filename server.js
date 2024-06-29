@@ -287,7 +287,7 @@ async function sendTextMessage(_type, to, text) {
 async function chatGPTProcessing(conversationId, req, user_text) {
   const openai = new OpenAI();
   const conversationArray = req.session.conversationArray;
-  console.log("Procesa el mensaje: ", JSON.stringify(conversationArray));
+  //console.log("Procesa el mensaje: ", JSON.stringify(conversationArray));
   try {
     //console.log('conversationArray:', conversationArray);
     for (let conversation_ of conversationArray) {
