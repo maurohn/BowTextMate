@@ -116,7 +116,8 @@ app.post('/webhook', async (req, res) => {
           const transcription = await transcribeAudio(conversationId, req, audioFilePath);
           //console.log(transcription);
           await sendTextMessage('txt', msg.from, transcription);
-
+          //Borro el archivo
+          deleteTempFile(audioFilePath);
         } catch (error) {
           console.error('Error fetching audio:', error);
           req.session.destroy();
@@ -188,6 +189,9 @@ app.post('/webhook', async (req, res) => {
           const gptResponse = await analyzeImage(imagen_path);
           //console.log("Response:", JSON.stringify(getResponse));
           await sendTextMessage('txt', msg.from, gptResponse.message.content);
+          const imageToDelete = `image-${media.data.id}.jpg`;
+          //Borro el archivo
+          deleteTempFile(imageToDelete);
         } catch (error) {
           await sendTextMessage('txt', msg.from, "Por el momento no podemos procesar imagenes, pero en breve si :) !!");
           console.error('Error fetching audio:', error);
@@ -208,6 +212,18 @@ app.post('/webhook', async (req, res) => {
 
 function findSession(conversationId) {
   return conversationArray.find((conversation) => conversation.conversationId === conversationId);
+}
+
+function deleteTempFile(filePath) {
+            // Borrar archivo
+fs.unlink(filePath, (err) => {
+  if (err) {
+    console.error('Error al borrar el archivo:', err);
+    return;
+  }
+  //console.log('Archivo borrado correctamente.');
+});
+     
 }
 
 // Función para transcribir el archivo de audio utilizando OpenAI
@@ -331,7 +347,7 @@ async function analyzeImage(imagePath) {
           content: [
             {
               type: 'text',
-              text: 'Que hay en la imagen?, si encuentras texto extraelo y clasificalo, lo mismo con los numeros.'
+              text: 'Que hay en la imagen?, si encuentras texto extraelo y clasificalo, lo mismo con los numeros y los colores.'
             },
             {
               type: 'image_url',
