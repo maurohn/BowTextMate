@@ -6,6 +6,7 @@ const path = require('path');
 const axios = require('axios');
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+require('log-timestamp');
 
 const app = express();
 app.use(bodyParser.json());
@@ -52,6 +53,7 @@ app.get('/webhook', (req, res) => {
 
 app.post('/webhook', async (req, res) => {
   var message = req.body;
+  console.log("ENTRA UN REQ:",JSON.stringify(message));
   if (message.entry && message.entry[0] && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
     //Si la session no existe la guardo
     var sessionData = req.session;
@@ -254,7 +256,7 @@ async function sendTextMessage(_type, to, text) {
 async function chatGPTProcessing(conversationId, req, user_text) {
   const openai = new OpenAI();
   const conversationArray = req.session.conversationArray;
-  console.log("LN-254-Proceso mensaje conversationArray:",JSON.stringify(conversationArray));
+  console.log("Procesa el mensaje: ",JSON.stringify(conversationArray));
   try {
     //console.log('conversationArray:', conversationArray);
     for (let conversation_ of conversationArray) {
