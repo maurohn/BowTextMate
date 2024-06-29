@@ -174,16 +174,19 @@ app.post('/webhook', async (req, res) => {
         console.log("url:", url);
         try {
           //Llamo al primer metodo para obtener la url de la imagen.
-          const url_imagen = await axios.get(url, {
+          const media = await axios.get(url, {
             headers: {
               'Authorization': `Bearer ${token_whatsapp}`,
               "User-Agent":
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
             }
           });
-          console.log("Objeto Imagen:", url_imagen.data.url);
+          console.log("Objeto Imagen:", media.data.url);
+          const imagen_path = await downloadImage(media);
           //const gptResponse = await imageProcessGPT(conversationId, req, url_imagen.data.url);
-          console.log("Imagen:", JSON.stringify(gptResponse));
+          console.log("Imagen:", imagen_path);
+          const getResponse = await analyzeImage(imagen_path);
+          console.log("Response:", JSON.stringify(getResponse));
           //await sendTextMessage('txt', msg.from, gptResponse.message.content);
         } catch (error) {
           await sendTextMessage('txt', msg.from, "Por el momento no podemos procesar imagenes, pero en breve si :) !!");
@@ -313,6 +316,28 @@ async function createImageGPT(user_text) {
   }
 }
 
+// Función para analizar la imagen utilizando la API de OpenAI
+async function analyzeImage(imagePath) {
+  const imageData = fs.readFileSync(imagePath);
+  const openai = new OpenAI();
+  const response = await openai.createChatCompletion({
+      model: "gpt-4-vision",
+      messages: [
+          {
+              role: "system",
+              content: "Describe the content of the image."
+          },
+          {
+              role: "user",
+              content: imageData
+          }
+      ]
+  });
+
+  return response.data.choices[0].message.content;
+}
+
+
 async function imageProcessGPT(conversationId, req, image_url) {
   const openai = new OpenAI();
   const conversationArray = req.session.conversationArray;
@@ -350,6 +375,24 @@ async function imageProcessGPT(conversationId, req, image_url) {
     console.error('Error fetching image:', error);
     //return { message: { content: 'Lo siento, no puedo procesar esa solicitud.' } };
   }
+}
+
+// Función para descargar la imagen desde la API de WhatsApp Business
+async function downloadImage(media) {
+  const config = {
+      headers: {
+        'Authorization': `Bearer ${token_whatsapp}`,
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+      },
+      responseType: 'arraybuffer'
+  };
+
+  const response = await axios.get(media.data.url, config);
+  const imagePath = `image-${media.data.id}.jpg`;
+
+  fs.writeFileSync(imagePath, response.data);
+  return imagePath;
 }
 
 
