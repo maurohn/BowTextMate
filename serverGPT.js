@@ -314,7 +314,7 @@ async function createImageGPT(user_text) {
 }
 
 async function imageProcessGPT(conversationId, req, image_url) {
-  const openai = new OpenAI();
+  const openai = new OpenAI(default_headers={'Authorization': `Bearer ${token_whatsapp}`});
   const conversationArray = req.session.conversationArray;
   console.log("Procesa el mensaje: ", JSON.stringify(conversationArray));
   try {
