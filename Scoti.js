@@ -271,7 +271,7 @@ async function sendTextMessage(_type, to, text) {
       'Content-Type': 'application/json'
     }
   };
-
+console.log(config);
   // Hacer la solicitud POST usando Axios
   axios.post(url, data, config)
     .then(response => {
