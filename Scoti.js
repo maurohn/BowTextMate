@@ -31,6 +31,8 @@ app.use(session({
 const token_whatsapp = process.env.WHATSAPP_APPLICATION_CREDENTIALS_SC;
 const url_whatsapp = "https://graph.facebook.com/v19.0/";
 
+console.log(token_whatsapp);
+
 const conversationArray = [{ conversationId: 0, conversation: {} }];
 
 app.get('/scoti', (req, res) => {
