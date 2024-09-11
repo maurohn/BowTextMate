@@ -242,8 +242,8 @@ async function transcribeAudio(conversationId, req, audioFilePath) {
 
 }
 
-async function sendTextMessage(_type, to, text) {
-  const url = url_whatsapp + '368320819689944/messages';
+async function sendTextMessage(_type, to, text) { 
+  const url = url_whatsapp + '334466229750599/messages';
   var data = {
     messaging_product: "whatsapp",
     to: to,
