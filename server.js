@@ -149,9 +149,14 @@ app.post('/webhook', async (req, res) => {
           }
           await sendTextMessage('txt', msg.from, 'Nueva personalidad adquirida...');
         } else if (msg.text.body.split("|")[0] === '###ENTRENAR') {
+          var conversation_ = {
+            messages: [{ role: "system", content: msg.text.body.split("|")[1] || '' }],
+            //model: "gpt-3.5-turbo",
+            model: "gpt-4o",
+          };
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
-              conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
+              conversation_.conversation = conversation_;
               //save conversation to session
               req.session.conversationArray = conversationArray;
             }

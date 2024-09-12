@@ -140,10 +140,14 @@ app.post('/scoti', async (req, res) => {
           await sendTextMessage('txt', msg.from, 'Reinicio completo...');
         } else if (msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
           await sendTextMessage('txt', msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
-        } else if (msg.text.body.split("|")[0] === '###PERSONALIZAR') {
+        } else if (msg.text.body.split("|")[0] === '###PERSONALIDAD') {
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
-              conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
+              conversation_.conversation =  {
+                messages: [{ role: "system", content:  msg.text.body.split("|")[1] || '' }],
+                //model: "gpt-3.5-turbo",
+                model: "gpt-4o",
+              };
               //save conversation to session
               //console.log("LN-141-Entro a personalizar:", conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
@@ -151,9 +155,14 @@ app.post('/scoti', async (req, res) => {
           }
           await sendTextMessage('txt', msg.from, 'Nueva personalidad adquirida...');
         } else if (msg.text.body.split("|")[0] === '###ENTRENAR') {
+          var conversation_ = {
+            messages: [{ role: "system", content: msg.text.body.split("|")[1] || '' }],
+            //model: "gpt-3.5-turbo",
+            model: "gpt-4o",
+          };
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
-              conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
+              conversation_.conversation = conversation_;
               //save conversation to session
               req.session.conversationArray = conversationArray;
             }
