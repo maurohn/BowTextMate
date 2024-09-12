@@ -159,11 +159,13 @@ app.post('/webhook', async (req, res) => {
           await sendTextMessage('txt', msg.from, 'Entrenamiento completo...');
         } else if (msg.text.body.split("|")[0] === '###ENGRAL') {
           for (let conversation_ of conversationArray) {
-              console.log("CONVER:", conversation_);
+            if (conversation_.conversationId) {
               conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
+              console.log("CONVER:", conversation_.conversation);
               //save conversation to session
               //console.log("LN-141-Entro a personalizar:", conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
+            }
           }
           await sendTextMessage('txt', msg.from, 'Entrenamiento general completo...');
         } else if (msg.text.body.split("|")[0] === '###PERSONALIDAD') {
