@@ -155,14 +155,14 @@ app.post('/scoti', async (req, res) => {
           }
           await sendTextMessage('txt', msg.from, 'Nueva personalidad adquirida...');
         } else if (msg.text.body.split("|")[0] === '###ENTRENAR') {
-          var conversation_ = {
+          var conversation_new = {
             messages: [{ role: "system", content: msg.text.body.split("|")[1] || '' }],
             //model: "gpt-3.5-turbo",
             model: "gpt-4o",
           };
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
-              conversation_.conversation = conversation_;
+              conversation_.conversation = conversation_new;
               //save conversation to session
               req.session.conversationArray = conversationArray;
             }
