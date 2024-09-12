@@ -127,7 +127,7 @@ app.post('/scoti', async (req, res) => {
         }
       } else if (msg.type === 'text') {
         //const message = msg.text.body; // Texto del mensaje
-        if (msg.text.body === '###REINICIAR' || msg.text.body === '###Reiniciar') {
+        if (msg.text.body === '###REINICIAR' || msg.text.body === '###reiniciar') {
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
               conversation_.conversation = conversation;
@@ -140,21 +140,17 @@ app.post('/scoti', async (req, res) => {
           await sendTextMessage('txt', msg.from, 'Reinicio completo...');
         } else if (msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
           await sendTextMessage('txt', msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
-        } else if (msg.text.body.split("|")[0] === '###PERSONALIDAD') {
+        } else if (msg.text.body.split("|")[0] === '###ENTRENAR') {
           for (let conversation_ of conversationArray) {
             if (conversation_.conversationId === conversationId) {
-              conversation_.conversation =  {
-                messages: [{ role: "system", content:  msg.text.body.split("|")[1] || '' }],
-                //model: "gpt-3.5-turbo",
-                model: "gpt-4o",
-              };
+              conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
               //save conversation to session
               //console.log("LN-141-Entro a personalizar:", conversation_.conversation.messages);
               req.session.conversationArray = conversationArray;
             }
           }
           await sendTextMessage('txt', msg.from, 'Nueva personalidad adquirida...');
-        } else if (msg.text.body.split("|")[0] === '###ENTRENAR') {
+        } else if (msg.text.body.split("|")[0] === '###PERSONALIDAD') {
           var conversation_new = {
             messages: [{ role: "system", content: msg.text.body.split("|")[1] || '' }],
             //model: "gpt-3.5-turbo",
