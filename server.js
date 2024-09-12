@@ -136,6 +136,15 @@ app.post('/webhook', async (req, res) => {
           }
           await chatGPTProcessing(conversationId, req, 'Cerrar Conversacion');
           await sendTextMessage('txt', msg.from, 'Reinicio completo...');
+        } else if (msg.text.body === '###REGRAL') {
+          for (let conversation_ of conversationArray) {
+              conversation_.conversation = conversation;
+              //save conversation to session
+              //console.log("LN-128-ENTRO EN REINICIAR:", conversation_.conversation.messages);
+              req.session.conversationArray = conversationArray;
+          }
+          await chatGPTProcessing(conversationId, req, 'Cerrar Conversacion');
+          await sendTextMessage('txt', msg.from, 'Reinicio general completo...');
         } else if (msg.text.body === '/help' || msg.text.body === '/Help' || msg.text.body === '/ayuda' || msg.text.body === '/Ayuda') {
           await sendTextMessage('txt', msg.from, 'Puedes enviarme un audio para trasnscribir, si escribis resumir, luego del audio te lo entrego resumido... para reiniciar la conversacion ingresa #reiniciar y si me escribis de cualquier tema te puedo ayudar simulando que soy J.A.R.V.I.S. :)');
         } else if (msg.text.body.split("|")[0] === '###ENTRENAR') {
@@ -147,7 +156,15 @@ app.post('/webhook', async (req, res) => {
               req.session.conversationArray = conversationArray;
             }
           }
-          await sendTextMessage('txt', msg.from, 'Nueva personalidad adquirida...');
+          await sendTextMessage('txt', msg.from, 'Entrenamiento completo...');
+        } else if (msg.text.body.split("|")[0] === '###ENGRAL') {
+          for (let conversation_ of conversationArray) {
+              conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
+              //save conversation to session
+              //console.log("LN-141-Entro a personalizar:", conversation_.conversation.messages);
+              req.session.conversationArray = conversationArray;
+          }
+          await sendTextMessage('txt', msg.from, 'Entrenamiento general completo...');
         } else if (msg.text.body.split("|")[0] === '###PERSONALIDAD') {
           var conversation_new = {
             messages: [{ role: "system", content: msg.text.body.split("|")[1] || '' }],
@@ -161,7 +178,7 @@ app.post('/webhook', async (req, res) => {
               req.session.conversationArray = conversationArray;
             }
           }
-          await sendTextMessage('txt', msg.from, 'Entrenamiento completo...');
+          await sendTextMessage('txt', msg.from, 'Nueva personalidad adquirida...');
         } else if (msg.text.body.toLowerCase().includes('crear') && msg.text.body.toLowerCase().includes('imagen')) {
           const gptResponse = await createImageGPT(msg.text.body);
           await sendTextMessage('img', msg.from, gptResponse);

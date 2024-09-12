@@ -149,7 +149,7 @@ app.post('/scoti', async (req, res) => {
               req.session.conversationArray = conversationArray;
             }
           }
-          await sendTextMessage('txt', msg.from, 'Nueva personalidad adquirida...');
+          await sendTextMessage('txt', msg.from, 'Entrenamiento completo...');
         } else if (msg.text.body.split("|")[0] === '###PERSONALIDAD') {
           var conversation_new = {
             messages: [{ role: "system", content: msg.text.body.split("|")[1] || '' }],
@@ -163,7 +163,7 @@ app.post('/scoti', async (req, res) => {
               req.session.conversationArray = conversationArray;
             }
           }
-          await sendTextMessage('txt', msg.from, 'Entrenamiento completo...');
+          await sendTextMessage('txt', msg.from, 'Nueva personalidad adquirida...');
         } else if (msg.text.body.toLowerCase().includes('crear') && msg.text.body.toLowerCase().includes('imagen')) {
           const gptResponse = await createImageGPT(msg.text.body);
           await sendTextMessage('img', msg.from, gptResponse);
