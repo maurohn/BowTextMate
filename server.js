@@ -159,6 +159,7 @@ app.post('/webhook', async (req, res) => {
           await sendTextMessage('txt', msg.from, 'Entrenamiento completo...');
         } else if (msg.text.body.split("|")[0] === '###ENGRAL') {
           for (let conversation_ of conversationArray) {
+              console.log("CONVER:", conversation_);
               conversation_.conversation.messages.push({ role: "system", content: msg.text.body.split("|")[1] || '' });
               //save conversation to session
               //console.log("LN-141-Entro a personalizar:", conversation_.conversation.messages);
